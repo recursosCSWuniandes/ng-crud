@@ -6,19 +6,11 @@ module.exports = function (grunt) {
         ngtemplates: {
             CrudModule: {
                 src: 'src/templates/**.html',
-                dest: 'dist/templates.js',
-                bootstrap: function(mod, script){
-                    return "angular.module('"+mod+"').run(['$templateCache', "+script+" ]);";
-                },
+                dest: 'tmp/templates.js',
                 htmlmin: {
                     collapseBooleanAttributes:      true,
                     collapseWhitespace:             true,
-                    removeAttributeQuotes:          true,
-                    removeComments:                 true, // Only if you don't use comment directives!
-                    removeEmptyAttributes:          true,
-                    removeRedundantAttributes:      true,
-                    removeScriptTypeAttributes:     true,
-                    removeStyleLinkTypeAttributes:  true
+                    removeComments:                 true
                 }
             }
         },
@@ -27,8 +19,8 @@ module.exports = function (grunt) {
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
             },
             build: {
-                src: 'src/<%= pkg.name %>.js',
-                dest: 'build/<%= pkg.name %>.min.js'
+                src: ['src/js/crud.mod.js','src/js/crud.svc.js','src/js/crud.dir.js','src/js/crud.ctrl.js','tmp/templates.js'],
+                dest: 'dist/ngcrud.min.js'
             }
         }
     });

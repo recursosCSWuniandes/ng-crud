@@ -10,7 +10,7 @@
                     submitFn: '&'
                 },
                 restrict: 'E',
-                templateUrl: 'src/shared/crud/search.tpl.html'
+                templateUrl: 'src/templates/search.tpl.html'
             };
         }]);
 
@@ -23,7 +23,7 @@
                     checklist: '=?'
                 },
                 restrict: 'E',
-                templateUrl: 'src/shared/crud/list.tpl.html',
+                templateUrl: 'src/templates/list.tpl.html',
                 controller: 'listCtrl'
             };
         }]);
@@ -37,7 +37,7 @@
                     checklist: '=?'
                 },
                 restrict: 'E',
-                templateUrl: 'src/shared/crud/gallery.tpl.html'
+                templateUrl: 'src/templates/gallery.tpl.html'
             };
         }]);
 
@@ -49,7 +49,7 @@
                     displayName: '='
                 },
                 restrict: 'E',
-                templateUrl: 'src/shared/crud/toolbar.tpl.html'
+                templateUrl: 'src/templates/toolbar.tpl.html'
             };
         }]);
 
@@ -61,7 +61,7 @@
                     record: '='
                 },
                 restrict: 'E',
-                templateUrl: 'src/shared/crud/form.tpl.html'
+                templateUrl: 'src/templates/form.tpl.html'
             };
         }]);
 
@@ -72,7 +72,7 @@
                     value: '='
                 },
                 restrict: 'E',
-                templateUrl: 'src/shared/crud/datepicker.tpl.html',
+                templateUrl: 'src/templates/datepicker.tpl.html',
                 controller: 'datePickerCtrl'
             };
         }]);
