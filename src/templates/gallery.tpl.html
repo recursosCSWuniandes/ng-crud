@@ -1,0 +1,24 @@
+<div class="col-sm-12">
+    <div ng-repeat="record in records">
+        <div class="col-md-4 col-sm-6 col-lg-3 well">
+            <div class="col-md-12">
+                <div class="img-thumbnail" ng-class="{'col-sm-4': !$first}" ng-repeat="column in model| filter: {type: 'Image'}" id="{{$parent.$index}}-{{column.name}}" ng-if="record[column.name]">
+                    <a ng-href="{{record[column.name]}}" target="_blank"><img class="img-responsive" ng-src="{{record[column.name]}}" alt="{{record[column.name]}}"></a>
+                </div>
+            </div>
+            <div class="caption" >
+                <div ng-repeat="column in model| filter: {type: '!Image'}" ng-switch="column.type" id="{{$parent.$index}}-{{column.name}}" ng-if="record[column.name] || column.fn">
+                    <p ng-switch-when="Computed"><strong>{{column.displayName}}:</strong> {{column.fn(record)}}</p>
+                    <p ng-switch-when="Date"><strong>{{column.displayName}}:</strong> {{record[column.name]| date}}</p>
+                    <p ng-switch-when="Reference"><strong>{{column.displayName}}:</strong> {{record[column.name].name}}</p>
+                    <p ng-switch-when="Boolean"><strong>{{column.displayName}}:</strong> <span ng-if="record[column.name] !== undefined" class="glyphicon" ng-class="{'glyphicon-check': record[column.name], 'glyphicon-unchecked': !record[column.name]}"></span></p>
+                    <p ng-switch-when="String"><strong>{{column.displayName}}:</strong> {{record[column.name]}}</p>
+                    <p ng-switch-default><strong>{{column.displayName}}:</strong> {{record[column.name]}}</p>
+                </div>
+            </div>
+            <p ng-if="actions" class="text-center">
+                <button ng-repeat="action in actions" id="{{$parent.$index}}-{{action.name}}-btn" class="btn btn-default btn-sm" ng-show="action.show()" ng-click="action.fn(record)"><span class="glyphicon glyphicon-{{action.icon}}"></span> {{action.displayName}}</button>
+            </p>
+        </div>
+    </div>
+</div>

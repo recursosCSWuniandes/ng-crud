@@ -1,0 +1,15 @@
+<toolbar name="name" display-name="displayName" actions="ctrl.globalActions"></toolbar>
+<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="ctrl.closeAlert($index)">{{alert.msg}}</alert>
+<div ng-hide="ctrl.editMode">
+    <list-records
+        model="model"
+        records="records"
+        actions="ctrl.recordActions">
+    </list-records>
+    <div class="text-center">
+        <pagination ng-show="ctrl.numPages > 1" num-pages="ctrl.numPages" total-items="ctrl.totalItems" ng-model="ctrl.currentPage" ng-change="ctrl.pageChanged()" items-per-page="ctrl.itemsPerPage" max-size="ctrl.maxSize" class="pagination-md" boundary-links="true" rotate="false"></pagination>
+    </div>
+</div>
+<div ng-show="ctrl.editMode" class="well">
+    <crud-form name="name" model="model" record="currentRecord"></crud-form>
+</div>
