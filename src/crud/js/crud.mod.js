@@ -1,6 +1,8 @@
 (function (ng) {
     var crud = ng.module('CrudModule', ['restangular', 'ui.bootstrap']);
 
+    crud.constant('CrudTemplatesDir', 'src/crud/templates/');
+
     crud.config(['RestangularProvider', function (rp) {
             rp.setBaseUrl('webresources');
             rp.addRequestInterceptor(function (data, operation) {

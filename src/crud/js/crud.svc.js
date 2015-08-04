@@ -358,11 +358,11 @@
         };
     }]);
 
-    mod.service('modalService', ['$modal', function ($modal) {
+    mod.service('modalService', ['$modal', 'CrudTemplatesDir', function ($modal, tplDir) {
         this.createSelectionModal = function (name, items, currentItems) {
             return $modal.open({
                 animation: true,
-                templateUrl: 'src/crud/templates/modal.tpl.html',
+                templateUrl: tplDir + 'modal.tpl.html',
                 controller: 'modalCtrl',
                 resolve: {
                     name: function () {
