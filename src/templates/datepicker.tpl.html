@@ -1,0 +1,6 @@
+<p class="input-group">
+    <input type="text" id="{{model.name}}" name="{{model.name}}" class="form-control" ng-model="value" ng-required="model.required" datepicker-popup is-open="opened" readonly />
+    <span class="input-group-btn">
+        <button type="button" id="{{model.name}}-datepicker" class="btn btn-default" ng-click="open($event)"><span class="glyphicon glyphicon-calendar"></span></button>
+    </span>
+</p>

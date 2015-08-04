@@ -1,0 +1,20 @@
+<form novalidate name="form" id="{{name}}-form" role="form" ng-submit="submitFn()" class="form-horizontal">
+    <legend>Search</legend>
+    <fieldset>
+        <div class="form-group col-md-12" ng-repeat="column in model|filter: {searchable: true}" ng-switch="column.type" ng-class="{'has-success': form[column.name].$valid && form[column.name].$dirty, 'has-error': form[column.name].$invalid && form[column.name].$dirty}" >
+            <label for="{{column.name}}-search" class="col-md-2 control-label">{{column.displayName}}</label>
+            <div class="col-md-10">
+                <input ng-switch-when="String" id="{{column.name}}-search" name="{{column.name}}" class="form-control" type="text" ng-model="record[column.name]" ng-required="column.required"/>
+                <input ng-switch-when="Integer" id="{{column.name}}-search" name="{{column.name}}" class="form-control" type="number" ng-model="record[column.name]" ng-required="column.required"/>
+                <input ng-switch-when="Long" id="{{column.name}}-search" name="{{column.name}}" class="form-control" type="number" ng-model="record[column.name]" ng-required="column.required"/>
+                <input ng-switch-when="Boolean" id="{{column.name}}-search" name="{{column.name}}" type="checkbox" ng-model="record[column.name]" ng-checked="record[column.name]" ng-required="column.required && record[column.name].$isEmpty" />
+                <input ng-switch-when="Computed" id="{{column.name}}-search" name="{{column.name}}" class="form-control" type="text" ng-value="column.fn(record)" readonly/>
+                <select ng-switch-when="Reference" id="{{column.name}}-search" name="{{column.name}}" class="form-control" ng-options="rc.name for rc in column.options track by rc.id" ng-model="record[column.name]"></select>
+                <date-picker ng-switch-when="Date" value="record[column.name]" model="column"></date-picker>
+            </div>
+        </div>
+        <div class="form-group col-md-12">
+            <input type="submit" value="Search" class="form-control btn btn-primary" />
+        </div>
+    </fieldset>
+</form>
