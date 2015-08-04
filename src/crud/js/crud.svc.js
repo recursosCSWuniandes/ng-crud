@@ -362,7 +362,7 @@
         this.createSelectionModal = function (name, items, currentItems) {
             return $modal.open({
                 animation: true,
-                templateUrl: 'src/shared/crud/modal.tpl.html',
+                templateUrl: 'src/crud/templates/modal.tpl.html',
                 controller: 'modalCtrl',
                 resolve: {
                     name: function () {
