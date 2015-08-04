@@ -71,7 +71,16 @@
         };
     }]);
 
-    mod.service('CRUDBase', ['Restangular', 'actionsService', '$injector', function (RestAngular, actionsBuilder, $injector) {
+    mod.service('CRUDBase', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', function (RestAngular, actionsBuilder, $injector, tplUrl) {
+
+        /*
+         * Función constructora para un controlador con funcionalidad genérica.
+         * Añade comportamiento para:
+         *   Manejo de alertas
+         *   Manejo de paginación
+         *   Acciones para CRUD
+         *   Carga de opciones de referencias
+         */
         function extendCommonCtrl(scope, model, name, displayName) {
             //Variables para el scope
             scope.name = name;
@@ -95,6 +104,7 @@
             //Variables para el controlador
             this.readOnly = false;
             this.editMode = false;
+            this.tpl = tplUrl;
 
             //Alertas
             function showMessage(msg, type) {
@@ -156,9 +166,6 @@
             this.recordActions = actionsBuilder.buildRecordActions(this);
         }
 
-        this.extendCommonController = function (ctrl, scope, model, name, displayName) {
-            extendCommonCtrl.call(ctrl, scope, model, name, displayName);
-        };
         function extendCtrl(scope, model, svc, name, displayName) {
             extendCommonCtrl.call(this, scope, model, name, displayName);
             var self = this;
@@ -228,6 +235,10 @@
             };
         }
 
+        this.extendCommonController = function (ctrl, scope, model, name, displayName) {
+            extendCommonCtrl.call(ctrl, scope, model, name, displayName);
+        };
+
         this.extendService = function (svc, ctx) {
             extendSvc.call(svc, ctx);
         };
@@ -251,109 +262,109 @@
             });
         }
 
-        this.extendService = function (svc, ctx) {
-            function masterSvcConstructor() {
-                var oldExtendFn = this.extendController;
-                this.extendController = function (ctrl, scope, model, name, displayName) {
-                    oldExtendFn.call(this, ctrl, scope, model, name, displayName);
-                    var oldEditFn = ctrl.editRecord;
-                    ctrl.editRecord = function (record) {
-                        return oldEditFn.call(this, record).then(function (data) {
-                            scope.$broadcast('master-selected', data);
-                            return data;
-                        });
-                    };
-                    var oldCreateFn = ctrl.createRecord;
-                    ctrl.createRecord = function () {
-                        oldCreateFn.call(this);
-                        scope.$broadcast('master-selected', scope.currentRecord);
-                    };
-                    ctrl.changeTab = function (tab) {
-                        scope.tab = tab;
-                    };
-                };
+        function compositeRelCtrl(scope, model, childName, refName) {
+            commonChildCtrl.call(this, scope, model, childName);
+
+            scope.refName = refName;
+
+            //Función para encontrar un registro por ID o CID
+            function indexOf(rc) {
+                var field = rc.id !== undefined ? 'id' : 'cid';
+                for (var i in scope.records) {
+                    if (scope.records.hasOwnProperty(i)) {
+                        var current = scope.records[i];
+                        if (current[field] === rc[field]) {
+                            return i;
+                        }
+                    }
+                }
             }
 
+            this.fetchRecords = function () {
+                scope.currentRecord = {};
+                this.editMode = false;
+            };
+            this.saveRecord = function () {
+                var rc = scope.currentRecord;
+                if (rc.id || rc.cid) {
+                    var idx = indexOf(rc);
+                    scope.records.splice(idx, 1, rc);
+                } else {
+                    rc.cid = -Math.floor(Math.random() * 10000);
+                    rc[scope.refName] = {id: scope.refId};
+                    scope.records.push(rc);
+                }
+                this.fetchRecords();
+            };
+            this.deleteRecord = function (record) {
+                var idx = indexOf(record);
+                scope.records.splice(idx, 1);
+            };
+            this.editRecord = function (record) {
+                scope.currentRecord = ng.copy(record);
+                this.editMode = true;
+            };
+            this.createRecord = function () {
+                this.editMode = true;
+                scope.currentRecord = {};
+            };
+        }
+
+        function aggregateRelCtrl(scope, model, childName, svc) {
+            commonChildCtrl.call(this, scope, model, childName);
+            this.showList = function () {
+                var modal = modalService.createSelectionModal(childName, svc.fetchRecords(), scope.records);
+                modal.result.then(function (data) {
+                    scope.records.splice.call(scope.records, 0, scope.records.length);
+                    scope.records.push.apply(scope.records, data);
+                });
+            };
+
+            var self = this;
+            this.globalActions = [{
+                name: 'select',
+                displayName: 'Select',
+                icon: 'check',
+                fn: function () {
+                    self.showList();
+                },
+                show: function () {
+                    return !self.editMode;
+                }
+            }];
+            delete this.recordActions;
+        }
+
+        function masterSvcConstructor() {
+            var oldExtendFn = this.extendController;
+            this.extendController = function (ctrl, scope, model, name, displayName) {
+                oldExtendFn.call(this, ctrl, scope, model, name, displayName);
+                var oldEditFn = ctrl.editRecord;
+                ctrl.editRecord = function (record) {
+                    return oldEditFn.call(this, record).then(function (data) {
+                        scope.$broadcast('master-selected', data);
+                        return data;
+                    });
+                };
+                var oldCreateFn = ctrl.createRecord;
+                ctrl.createRecord = function () {
+                    oldCreateFn.call(this);
+                    scope.$broadcast('master-selected', scope.currentRecord);
+                };
+                ctrl.changeTab = function (tab) {
+                    scope.tab = tab;
+                };
+            };
+        }
+
+        this.extendService = function (svc, ctx) {
             CRUDBase.extendService(svc, ctx);
             masterSvcConstructor.call(svc);
         };
         this.extendCompChildCtrl = function (ctrl, scope, model, childName, refName) {
-            function compositeRelCtrl(scope, model, childName, refName) {
-                commonChildCtrl.call(this, scope, model, childName);
-
-                scope.refName = refName;
-
-                //Función para encontrar un registro por ID o CID
-                function indexOf(rc) {
-                    var field = rc.id !== undefined ? 'id' : 'cid';
-                    for (var i in scope.records) {
-                        if (scope.records.hasOwnProperty(i)) {
-                            var current = scope.records[i];
-                            if (current[field] === rc[field]) {
-                                return i;
-                            }
-                        }
-                    }
-                }
-
-                this.fetchRecords = function () {
-                    scope.currentRecord = {};
-                    this.editMode = false;
-                };
-                this.saveRecord = function () {
-                    var rc = scope.currentRecord;
-                    if (rc.id || rc.cid) {
-                        var idx = indexOf(rc);
-                        scope.records.splice(idx, 1, rc);
-                    } else {
-                        rc.cid = -Math.floor(Math.random() * 10000);
-                        rc[scope.refName] = {id: scope.refId};
-                        scope.records.push(rc);
-                    }
-                    this.fetchRecords();
-                };
-                this.deleteRecord = function (record) {
-                    var idx = indexOf(record);
-                    scope.records.splice(idx, 1);
-                };
-                this.editRecord = function (record) {
-                    scope.currentRecord = ng.copy(record);
-                    this.editMode = true;
-                };
-                this.createRecord = function () {
-                    this.editMode = true;
-                    scope.currentRecord = {};
-                };
-            }
-
             compositeRelCtrl.call(ctrl, scope, model, childName, refName);
         };
         this.extendAggChildCtrl = function (ctrl, scope, model, childName, svc) {
-            function aggregateRelCtrl(scope, model, childName, svc) {
-                commonChildCtrl.call(this, scope, model, childName);
-                this.showList = function () {
-                    var modal = modalService.createSelectionModal(childName, svc.fetchRecords(), scope.records);
-                    modal.result.then(function (data) {
-                        scope.records.splice.call(scope.records, 0, scope.records.length);
-                        scope.records.push.apply(scope.records, data);
-                    });
-                };
-
-                var self = this;
-                this.globalActions = [{
-                    name: 'select',
-                    displayName: 'Select',
-                    icon: 'check',
-                    fn: function () {
-                        self.showList();
-                    },
-                    show: function () {
-                        return !self.editMode;
-                    }
-                }];
-                delete this.recordActions;
-            }
-
             aggregateRelCtrl.call(ctrl, scope, model, childName, svc);
         };
     }]);
