@@ -5,7 +5,9 @@
 
     mod.constant('CrudTemplatesDir', tplDir);
 
-    mod.constant('CrudTemplateURL', tplDir + 'crud.tpl.html')
+    mod.constant('CrudTemplateURL', tplDir + 'crud.tpl.html');
+
+    mod.constant('CrudCtrlAlias', 'ctrl');
 
     mod.config(['RestangularProvider', function (rp) {
             rp.setBaseUrl('webresources');

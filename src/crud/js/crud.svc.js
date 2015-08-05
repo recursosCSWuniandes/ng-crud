@@ -71,7 +71,7 @@
         };
     }]);
 
-    mod.service('CRUDBase', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', function (RestAngular, actionsBuilder, $injector, tplUrl) {
+    mod.service('CrudCreator', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', function (RestAngular, actionsBuilder, $injector, tplUrl) {
 
         /*
          * Función constructora para un controlador con funcionalidad genérica.
@@ -175,15 +175,23 @@
                 self.showError(response.data);
             }
 
+            this.changeTab = function (tab) {
+                scope.tab = tab;
+            };
+
             this.createRecord = function () {
+                scope.$broadcast('pre-create', scope.currentRecord);
                 this.editMode = true;
                 scope.currentRecord = {};
+                scope.$broadcast('post-create', scope.currentRecord);
             };
 
             this.editRecord = function (record) {
+                scope.$broadcast('pre-edit', record);
                 return svc.fetchRecord(record).then(function (data) {
                     scope.currentRecord = data;
                     self.editMode = true;
+                    scope.$broadcast('post-edit', data);
                     return data;
                 }, responseError);
             };
@@ -243,18 +251,19 @@
             extendSvc.call(svc, ctx);
         };
 
-        this.extendController = function(ctrl, svc, scope, model, name, displayName){
+        this.extendController = function (ctrl, svc, scope, model, name, displayName) {
             extendCtrl.call(ctrl, scope, model, svc, name, displayName);
         }
     }]);
 
-    mod.service('masterUtils', ['CRUDBase', 'actionsService', 'modalService', function (CRUDBase, actionsBuilder, modalService) {
+    mod.service('masterUtils', ['CrudCreator', 'actionsService', 'modalService', function (CRUDBase, actionsBuilder, modalService) {
         function commonChildCtrl(scope, model, childName) {
             CRUDBase.extendCommonController(this, scope, model, childName, childName);
 
             //Escucha de evento cuando se selecciona un registro maestro
             var self = this;
-            scope.$on('master-selected', function (event, args) {
+
+            function onCreateOrEdit(event, args) {
                 if (args[childName] === undefined) {
                     args[childName] = [];
                 }
@@ -263,7 +272,10 @@
                 if (self.fetchRecords) {
                     self.fetchRecords();
                 }
-            });
+            }
+
+            scope.$on('post-create', onCreateOrEdit);
+            scope.$on('post-edit', onCreateOrEdit);
         }
 
         function compositeRelCtrl(scope, model, childName, refName) {
@@ -339,32 +351,6 @@
             delete this.recordActions;
         }
 
-        function masterSvcConstructor() {
-            var oldExtendFn = this.extendController;
-            this.extendController = function (ctrl, scope, model, name, displayName) {
-                oldExtendFn.call(this, ctrl, scope, model, name, displayName);
-                var oldEditFn = ctrl.editRecord;
-                ctrl.editRecord = function (record) {
-                    return oldEditFn.call(this, record).then(function (data) {
-                        scope.$broadcast('master-selected', data);
-                        return data;
-                    });
-                };
-                var oldCreateFn = ctrl.createRecord;
-                ctrl.createRecord = function () {
-                    oldCreateFn.call(this);
-                    scope.$broadcast('master-selected', scope.currentRecord);
-                };
-                ctrl.changeTab = function (tab) {
-                    scope.tab = tab;
-                };
-            };
-        }
-
-        this.extendService = function (svc, ctx) {
-            CRUDBase.extendService(svc, ctx);
-            masterSvcConstructor.call(svc);
-        };
         this.extendCompChildCtrl = function (ctrl, scope, model, childName, refName) {
             compositeRelCtrl.call(ctrl, scope, model, childName, refName);
         };

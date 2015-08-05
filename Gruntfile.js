@@ -16,7 +16,7 @@ module.exports = function (grunt) {
         },
         uglify: {
             options: {
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> Universidad de Los Andes */\n'
+                banner: '/*! <%= pkg.name %> Universidad de Los Andes */\n'
             },
             ngCrud: {
                 src: [
