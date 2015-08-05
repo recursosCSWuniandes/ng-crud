@@ -242,6 +242,10 @@
         this.extendService = function (svc, ctx) {
             extendSvc.call(svc, ctx);
         };
+
+        this.extendController = function(ctrl, svc, scope, model, name, displayName){
+            extendCtrl.call(ctrl, scope, model, svc, name, displayName);
+        }
     }]);
 
     mod.service('masterUtils', ['CRUDBase', 'actionsService', 'modalService', function (CRUDBase, actionsBuilder, modalService) {
