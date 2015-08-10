@@ -1,5 +1,5 @@
 (function (ng, Math) {
-    var mod = ng.module('CrudModule');
+    var mod = ng.module('ngCrud');
 
     mod.service('actionsService', [function () {
         this.buildGlobalActions = function (ctrl) {
@@ -243,22 +243,8 @@
             };
         }
 
-        this.extendCommonController = function (ctrl, scope, model, name, displayName) {
-            extendCommonCtrl.call(ctrl, scope, model, name, displayName);
-        };
-
-        this.extendService = function (svc, ctx) {
-            extendSvc.call(svc, ctx);
-        };
-
-        this.extendController = function (ctrl, svc, scope, model, name, displayName) {
-            extendCtrl.call(ctrl, scope, model, svc, name, displayName);
-        }
-    }]);
-
-    mod.service('masterUtils', ['CrudCreator', 'actionsService', 'modalService', function (CRUDBase, actionsBuilder, modalService) {
         function commonChildCtrl(scope, model, childName) {
-            CRUDBase.extendCommonController(this, scope, model, childName, childName);
+            extendCommonCtrl.call(this, scope, model, childName, childName);
 
             //Escucha de evento cuando se selecciona un registro maestro
             var self = this;
@@ -350,6 +336,18 @@
             }];
             delete this.recordActions;
         }
+
+        this.extendCommonController = function (ctrl, scope, model, name, displayName) {
+            extendCommonCtrl.call(ctrl, scope, model, name, displayName);
+        };
+
+        this.extendService = function (svc, ctx) {
+            extendSvc.call(svc, ctx);
+        };
+
+        this.extendController = function (ctrl, svc, scope, model, name, displayName) {
+            extendCtrl.call(ctrl, scope, model, svc, name, displayName);
+        };
 
         this.extendCompChildCtrl = function (ctrl, scope, model, childName, refName) {
             compositeRelCtrl.call(ctrl, scope, model, childName, refName);

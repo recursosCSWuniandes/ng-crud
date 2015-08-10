@@ -1,5 +1,5 @@
 (function (ng) {
-    var mod = ng.module('CrudModule');
+    var mod = ng.module('ngCrud');
 
     mod.directive('searchBar', ['CrudTemplatesDir', function (tplDir) {
         return {

@@ -1,5 +1,5 @@
 (function (ng) {
-    var mod = ng.module('CrudModule', ['restangular', 'ui.bootstrap']);
+    var mod = ng.module('ngCrud', ['restangular', 'ui.bootstrap']);
 
     var tplDir = 'src/crud/templates/';
 

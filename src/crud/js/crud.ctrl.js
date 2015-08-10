@@ -1,5 +1,5 @@
 (function (ng) {
-    var mod = ng.module('CrudModule');
+    var mod = ng.module('ngCrud');
 
     mod.controller('listCtrl', ['$scope', function ($scope) {
             $scope.checkAll = function () {

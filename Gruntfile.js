@@ -4,7 +4,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         ngtemplates: {
-            CrudModule: {
+            ngCrud: {
                 src: 'src/crud/templates/**.html',
                 dest: 'tmp/crud/templates.js',
                 htmlmin: {
