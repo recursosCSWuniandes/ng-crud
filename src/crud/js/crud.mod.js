@@ -1,7 +1,15 @@
 (function (ng) {
-    var crud = ng.module('CrudModule', ['restangular', 'ui.bootstrap']);
+    var mod = ng.module('ngCrud', ['restangular', 'ui.bootstrap']);
 
-    crud.config(['RestangularProvider', function (rp) {
+    var tplDir = 'src/crud/templates/';
+
+    mod.constant('CrudTemplatesDir', tplDir);
+
+    mod.constant('CrudTemplateURL', tplDir + 'crud.tpl.html');
+
+    mod.constant('CrudCtrlAlias', 'ctrl');
+
+    mod.config(['RestangularProvider', function (rp) {
             rp.setBaseUrl('webresources');
             rp.addRequestInterceptor(function (data, operation) {
                 if (operation === "remove") {
