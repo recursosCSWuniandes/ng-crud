@@ -71,7 +71,7 @@
         };
     }]);
 
-    mod.service('CrudCreator', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', function (RestAngular, actionsBuilder, $injector, tplUrl) {
+    mod.service('CrudCreator', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', 'modalService', function (RestAngular, actionsBuilder, $injector, tplUrl, modalService) {
 
         /*
          * Función constructora para un controlador con funcionalidad genérica.

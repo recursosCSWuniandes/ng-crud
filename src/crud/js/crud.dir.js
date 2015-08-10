@@ -76,4 +76,20 @@
             controller: 'datePickerCtrl'
         };
     }]);
+
+    mod.directive('childController', ['$compile', 'CrudCtrlAlias', function ($compile, alias) {
+        return {
+            restrict: 'A',
+            terminal: true,
+            priority: 100000,
+            link: function (scope, elem) {
+                elem.removeAttr('child-controller');
+                if (scope.field && scope.field.ctrl) {
+                    elem.attr('ng-controller', scope.field.ctrl + " as " + alias);
+                    elem.attr('ng-include', scope.field.template?'field.template':'ctrl.tpl');
+                    $compile(elem)(scope);
+                }
+            }
+        };
+    }]);
 })(window.angular);
