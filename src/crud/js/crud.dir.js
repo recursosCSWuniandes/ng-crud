@@ -5,7 +5,7 @@
         return {
             scope: {
                 name: '=',
-                model: '=*',
+                fields: '=*',
                 record: '=',
                 submitFn: '&'
             },
@@ -18,7 +18,7 @@
         return {
             scope: {
                 records: '=*',
-                model: '=*',
+                fields: '=*',
                 actions: '=*?',
                 checklist: '=?'
             },
@@ -32,7 +32,7 @@
         return {
             scope: {
                 records: '=*',
-                model: '=*',
+                fields: '=*',
                 actions: '=*?',
                 checklist: '=?'
             },
@@ -57,7 +57,7 @@
         return {
             scope: {
                 name: '=',
-                model: '=*',
+                fields: '=*',
                 record: '='
             },
             restrict: 'E',
@@ -84,9 +84,9 @@
             priority: 100000,
             link: function (scope, elem) {
                 elem.removeAttr('child-controller');
-                if (scope.field && scope.field.ctrl) {
-                    elem.attr('ng-controller', scope.field.ctrl + " as " + alias);
-                    elem.attr('ng-include', scope.field.template?'field.template':'ctrl.tpl');
+                if (scope.child && scope.child.ctrl) {
+                    elem.attr('ng-controller', scope.child.ctrl + " as " + alias);
+                    elem.attr('ng-include', scope.child.template?'child.template':'ctrl.tpl');
                     $compile(elem)(scope);
                 }
             }

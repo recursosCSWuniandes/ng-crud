@@ -148,7 +148,7 @@
                     });
                 }
 
-                var model = scope.model;
+                var model = scope.model.fields;
                 for (var i in model) {
                     if (model.hasOwnProperty(i)) {
                         var field = model[i];
