@@ -1,7 +1,7 @@
 <form novalidate name="form" id="{{name}}-form" role="form">
     <fieldset>
         <input id="id" class="form-control" type="hidden" ng-model="record.id"/>
-        <div class="form-group col-md-12" ng-repeat="column in model" ng-switch="column.type" ng-class="{'has-success': form[column.name].$valid && form[column.name].$dirty, 'has-error': form[column.name].$invalid && form[column.name].$dirty}" >
+        <div class="form-group col-md-12" ng-repeat="column in fields" ng-switch="column.type" ng-class="{'has-success': form[column.name].$valid && form[column.name].$dirty, 'has-error': form[column.name].$invalid && form[column.name].$dirty}" >
             <label for="{{column.name}}" class="col-md-2 control-label">{{column.displayName}}</label>
             <div class="col-md-10">
                 <input ng-switch-when="String" id="{{column.name}}" name="{{column.name}}" class="form-control" type="text" ng-model="record[column.name]" ng-required="column.required" />

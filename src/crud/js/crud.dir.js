@@ -5,7 +5,7 @@
         return {
             scope: {
                 name: '=',
-                model: '=*',
+                fields: '=*',
                 record: '=',
                 submitFn: '&'
             },
@@ -18,7 +18,7 @@
         return {
             scope: {
                 records: '=*',
-                model: '=*',
+                fields: '=*',
                 actions: '=*?',
                 checklist: '=?'
             },
@@ -32,7 +32,7 @@
         return {
             scope: {
                 records: '=*',
-                model: '=*',
+                fields: '=*',
                 actions: '=*?',
                 checklist: '=?'
             },
@@ -57,7 +57,7 @@
         return {
             scope: {
                 name: '=',
-                model: '=*',
+                fields: '=*',
                 record: '='
             },
             restrict: 'E',
@@ -74,6 +74,22 @@
             restrict: 'E',
             templateUrl: tplDir + 'datepicker.tpl.html',
             controller: 'datePickerCtrl'
+        };
+    }]);
+
+    mod.directive('childController', ['$compile', 'CrudCtrlAlias', function ($compile, alias) {
+        return {
+            restrict: 'A',
+            terminal: true,
+            priority: 100000,
+            link: function (scope, elem) {
+                elem.removeAttr('child-controller');
+                if (scope.child && scope.child.ctrl) {
+                    elem.attr('ng-controller', scope.child.ctrl + " as " + alias);
+                    elem.attr('ng-include', scope.child.template?'child.template':'ctrl.tpl');
+                    $compile(elem)(scope);
+                }
+            }
         };
     }]);
 })(window.angular);
