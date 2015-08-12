@@ -34,6 +34,18 @@ module.exports = function (grunt) {
                 ],
                 dest: 'dist/ngcrud-mocks.min.js'
             }
+        },
+        concat: {
+            dist: {
+                src: [
+                    'src/crud/js/crud.mod.js',
+                    'src/crud/js/crud.svc.js',
+                    'src/crud/js/crud.dir.js',
+                    'src/crud/js/crud.ctrl.js',
+                    'tmp/crud/templates.js'
+                ],
+                dest: '/home/afesguerra/Documentos/netbeans/crud-example/MusicStore.web/src/main/webapp/src/shared/ngcrud.min.js'
+            }
         }
     });
 
@@ -41,6 +53,10 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
+    grunt.loadNpmTasks('grunt-contrib-concat');
+
     grunt.registerTask('default', ['ngtemplates', 'uglify']);
+
+    grunt.registerTask('dev', ['ngtemplates', 'concat']);
 
 };

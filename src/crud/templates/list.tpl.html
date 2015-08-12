@@ -3,14 +3,14 @@
         <thead>
             <tr>
                 <th ng-if="checklist" id="check-all"><input type="checkbox" ng-click="checkAll()"/></th>
-                <th ng-repeat="column in model">{{column.displayName}}</th>
+                <th ng-repeat="column in fields">{{column.displayName}}</th>
                 <th ng-if="actions">Actions</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="record in records">
                 <td ng-if="checklist" id="{{$index}}-selected"><input type="checkbox" ng-model="record.selected"/></td>
-                <td ng-repeat="column in model" ng-switch="column.type" id="{{$parent.$index}}-{{column.name}}">
+                <td ng-repeat="column in fields" ng-switch="column.type" id="{{$parent.$index}}-{{column.name}}">
                     <div ng-switch-when="Computed">{{column.fn(record)}}</div>
                     <div ng-switch-when="Date">{{record[column.name]| date}}</div>
                     <div ng-switch-when="Reference">{{record[column.name].name}}</div>

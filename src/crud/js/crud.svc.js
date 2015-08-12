@@ -71,7 +71,7 @@
         };
     }]);
 
-    mod.service('CrudCreator', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', function (RestAngular, actionsBuilder, $injector, tplUrl) {
+    mod.service('CrudCreator', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', 'modalService', function (RestAngular, actionsBuilder, $injector, tplUrl, modalService) {
 
         /*
          * Función constructora para un controlador con funcionalidad genérica.
@@ -148,7 +148,7 @@
                     });
                 }
 
-                var model = scope.model;
+                var model = scope.model.fields;
                 for (var i in model) {
                     if (model.hasOwnProperty(i)) {
                         var field = model[i];

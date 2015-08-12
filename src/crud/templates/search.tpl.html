@@ -1,7 +1,7 @@
 <form novalidate name="form" id="{{name}}-form" role="form" ng-submit="submitFn()" class="form-horizontal">
     <legend>Search</legend>
     <fieldset>
-        <div class="form-group col-md-12" ng-repeat="column in model|filter: {searchable: true}" ng-switch="column.type" ng-class="{'has-success': form[column.name].$valid && form[column.name].$dirty, 'has-error': form[column.name].$invalid && form[column.name].$dirty}" >
+        <div class="form-group col-md-12" ng-repeat="column in fields|filter: {searchable: true}" ng-switch="column.type" ng-class="{'has-success': form[column.name].$valid && form[column.name].$dirty, 'has-error': form[column.name].$invalid && form[column.name].$dirty}" >
             <label for="{{column.name}}-search" class="col-md-2 control-label">{{column.displayName}}</label>
             <div class="col-md-10">
                 <input ng-switch-when="String" id="{{column.name}}-search" name="{{column.name}}" class="form-control" type="text" ng-model="record[column.name]" ng-required="column.required"/>
