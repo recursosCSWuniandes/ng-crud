@@ -3,48 +3,51 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        concat: {
+            dist: {
+                src: '<%= concat.dev.src %>',
+                dest: 'tmp/ngcrud.js'
+            },
+            dev: {
+                src: [
+                    'src/crud/js/crud.mod.js',
+                    'src/crud/js/crud.svc.js',
+                    'src/crud/js/crud.dir.js',
+                    'src/crud/js/crud.ctrl.js'
+                ],
+                dest: '../../netbeans/crud-example/MusicStore.web/src/main/webapp/src/ngcrud.min.js'
+            }
+        },
         ngtemplates: {
-            ngCrud: {
-                src: 'src/crud/templates/**.html',
-                dest: 'tmp/crud/templates.js',
-                htmlmin: {
-                    collapseBooleanAttributes: true,
-                    collapseWhitespace: true,
-                    removeComments: true
+            options: {
+                module: 'ngCrud',
+                append: true
+            },
+            dist: {
+                src: '<%= ngtemplates.dev.src %>',
+                dest: '<%= concat.dist.dest %>',
+                options: {
+                    htmlmin: {
+                        collapseBooleanAttributes: true,
+                        collapseWhitespace: true,
+                        removeComments: true
+                    }
                 }
+            },
+            dev: {
+                src: 'src/crud/templates/**.html',
+                dest: '<%= concat.dev.dest %>'
             }
         },
         uglify: {
             options: {
                 banner: '/*! <%= pkg.name %> Universidad de Los Andes */\n'
             },
-            ngCrud: {
-                src: [
-                    'src/crud/js/crud.mod.js',
-                    'src/crud/js/crud.svc.js',
-                    'src/crud/js/crud.dir.js',
-                    'src/crud/js/crud.ctrl.js',
-                    'tmp/crud/templates.js'
-                ],
-                dest: 'dist/ngcrud.min.js'
-            },
-            ngCrudMock: {
-                src: [
-                    'src/mocks/js/mocks.mod.js'
-                ],
-                dest: 'dist/ngcrud-mocks.min.js'
-            }
-        },
-        concat: {
             dist: {
-                src: [
-                    'src/crud/js/crud.mod.js',
-                    'src/crud/js/crud.svc.js',
-                    'src/crud/js/crud.dir.js',
-                    'src/crud/js/crud.ctrl.js',
-                    'tmp/crud/templates.js'
-                ],
-                dest: '/home/afesguerra/Documentos/netbeans/crud-example/MusicStore.web/src/main/webapp/src/shared/ngcrud.min.js'
+                files: {
+                    'dist/ngcrud.min.js': '<%= concat.dist.dest %>',
+                    'dist/ngcrud-mocks.min.js': 'src/mocks/js/mocks.mod.js'
+                }
             }
         }
     });
@@ -55,8 +58,8 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-concat');
 
-    grunt.registerTask('default', ['ngtemplates', 'uglify']);
+    grunt.registerTask('default', ['concat:dist', 'ngtemplates:dist', 'uglify:dist']);
 
-    grunt.registerTask('dev', ['ngtemplates', 'concat']);
+    grunt.registerTask('dev', ['concat:dev', 'ngtemplates:dev']);
 
 };
