@@ -13,6 +13,7 @@
                     <p ng-switch-when="Reference"><strong>{{column.displayName}}:</strong> {{record[column.name].name}}</p>
                     <p ng-switch-when="Boolean"><strong>{{column.displayName}}:</strong> <span ng-if="record[column.name] !== undefined" class="glyphicon" ng-class="{'glyphicon-check': record[column.name], 'glyphicon-unchecked': !record[column.name]}"></span></p>
                     <p ng-switch-when="String"><strong>{{column.displayName}}:</strong> {{record[column.name]}}</p>
+                    <p ng-switch-when="Currency"><strong>{{column.displayName}}:</strong> {{record[column.name] | currency}}</p>
                     <p ng-switch-default><strong>{{column.displayName}}:</strong> {{record[column.name]}}</p>
                 </div>
             </div>

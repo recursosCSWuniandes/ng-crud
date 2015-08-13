@@ -12,6 +12,7 @@
                 <td ng-if="checklist" id="{{$index}}-selected"><input type="checkbox" ng-model="record.selected"/></td>
                 <td ng-repeat="column in fields" ng-switch="column.type" id="{{$parent.$index}}-{{column.name}}">
                     <div ng-switch-when="Computed">{{column.fn(record)}}</div>
+                    <div ng-switch-when="Currency">{{record[column.name] | currency}}</div>
                     <div ng-switch-when="Date">{{record[column.name]| date}}</div>
                     <div ng-switch-when="Reference">{{record[column.name].name}}</div>
                     <div ng-switch-when="Boolean"><span ng-if="record[column.name] != undefined" class="glyphicon" ng-class="{'glyphicon-check': record[column.name], 'glyphicon-unchecked': !record[column.name]}"></span></div>
