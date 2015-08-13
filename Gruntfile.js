@@ -15,7 +15,7 @@ module.exports = function (grunt) {
                     'src/crud/js/crud.dir.js',
                     'src/crud/js/crud.ctrl.js'
                 ],
-                dest: '/home/afesguerra/Documentos/netbeans/crud-example/MusicStore.web/src/main/webapp/src/shared/ngcrud.min.js'
+                dest: '../../netbeans/crud-example/MusicStore.web/src/main/webapp/src/ngcrud.min.js'
             }
         },
         ngtemplates: {

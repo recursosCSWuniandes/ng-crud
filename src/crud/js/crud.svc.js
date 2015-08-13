@@ -105,6 +105,7 @@
             this.readOnly = false;
             this.editMode = false;
             this.tpl = tplUrl;
+            this.asGallery = false;
 
             //Alertas
             function showMessage(msg, type) {
