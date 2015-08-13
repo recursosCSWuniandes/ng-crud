@@ -6,7 +6,7 @@ module.exports = function (grunt) {
         concat: {
             dist: {
                 src: '<%= concat.dev.src %>',
-                dest: 'dist/ngcrud.js'
+                dest: 'tmp/ngcrud.js'
             },
             dev: {
                 src: [
@@ -19,6 +19,10 @@ module.exports = function (grunt) {
             }
         },
         ngtemplates: {
+            options: {
+                module: 'ngCrud',
+                append: true
+            },
             dist: {
                 src: '<%= ngtemplates.dev.src %>',
                 dest: '<%= concat.dist.dest %>',
@@ -27,33 +31,23 @@ module.exports = function (grunt) {
                         collapseBooleanAttributes: true,
                         collapseWhitespace: true,
                         removeComments: true
-                    },
-                    module: '<%= ngtemplates.dev.options.module %>',
-                    append: true
+                    }
                 }
             },
             dev: {
                 src: 'src/crud/templates/**.html',
-                dest: '<%= concat.dist.dest %>',
-                options: {
-                    module: 'ngCrud',
-                    append: true
-                }
+                dest: '<%= concat.dev.dest %>'
             }
         },
         uglify: {
             options: {
                 banner: '/*! <%= pkg.name %> Universidad de Los Andes */\n'
             },
-            ngCrud: {
-                src: '<%= concat.dist.dest %>',
-                dest: 'dist/ngcrud.min.js'
-            },
-            ngCrudMock: {
-                src: [
-                    'src/mocks/js/mocks.mod.js'
-                ],
-                dest: 'dist/ngcrud-mocks.min.js'
+            dist: {
+                files: {
+                    'dist/ngcrud.min.js': '<%= concat.dist.dest %>',
+                    'dist/ngcrud-mocks.min.js': 'src/mocks/js/mocks.mod.js'
+                }
             }
         }
     });
@@ -64,7 +58,7 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-concat');
 
-    grunt.registerTask('default', ['concat:dist', 'ngtemplates:dist', 'uglify']);
+    grunt.registerTask('default', ['concat:dist', 'ngtemplates:dist', 'uglify:dist']);
 
     grunt.registerTask('dev', ['concat:dev', 'ngtemplates:dev']);
 
