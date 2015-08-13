@@ -1,11 +1,20 @@
 <toolbar name="name" display-name="displayName" actions="ctrl.globalActions"></toolbar>
 <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="ctrl.closeAlert($index)">{{alert.msg}}</alert>
 <div ng-hide="ctrl.editMode">
-    <list-records
-        fields="model.fields"
-        records="records"
-        actions="ctrl.recordActions">
-    </list-records>
+    <div ng-if="ctrl.asGallery">
+        <gallery
+            fields="model.fields"
+            records="records"
+            actions="ctrl.recordActions">
+        </gallery>
+    </div>
+    <div ng-if="!ctrl.asGallery">
+        <list-records
+            fields="model.fields"
+            records="records"
+            actions="ctrl.recordActions">
+        </list-records>
+    </div>
     <div class="text-center">
         <pagination ng-show="ctrl.numPages > 1" num-pages="ctrl.numPages" total-items="ctrl.totalItems"
                     ng-model="ctrl.currentPage" ng-change="ctrl.pageChanged()" items-per-page="ctrl.itemsPerPage"
