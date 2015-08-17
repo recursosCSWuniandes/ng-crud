@@ -71,7 +71,7 @@
         };
     }]);
 
-    mod.service('CrudCreator', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', 'modalService', function (RestAngular, actionsBuilder, $injector, tplUrl, modalService) {
+    mod.service('CrudCreator', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', 'modalService', '$location', function (RestAngular, actionsBuilder, $injector, tplUrl, modalService, $location) {
 
         /*
          * Función constructora para un controlador con funcionalidad genérica.
@@ -198,7 +198,9 @@
             };
 
             this.fetchRecords = function () {
-                return svc.fetchRecords(this.currentPage, this.itemsPerPage).then(function (data) {
+                var queryParams = {page: this.currentPage, maxRecords: this.itemsPerPage};
+                ng.extend(queryParams, $location.search());
+                return svc.fetchRecords(queryParams).then(function (data) {
                     scope.records = data;
                     self.totalItems = data.totalRecords;
                     scope.currentRecord = {};
@@ -222,8 +224,8 @@
             this.url = url;
             this.api = RestAngular.all(this.url);
 
-            this.fetchRecords = function (currentPage, itemsPerPage) {
-                return this.api.getList({page: currentPage, maxRecords: itemsPerPage});
+            this.fetchRecords = function (queryParams, headers) {
+                return this.api.getList(queryParams, headers);
             };
 
             this.fetchRecord = function (record) {
