@@ -21,7 +21,7 @@
                     <div ng-switch-default>{{record[column.name]}}</div>
                 </td>
                 <td ng-if="actions">
-                    <button ng-repeat="action in actions" id="{{$parent.$index}}-{{action.name}}-btn" class="btn btn-default btn-sm" ng-show="action.show()" ng-click="action.fn(record)"><span class="glyphicon glyphicon-{{action.icon}}"></span> {{action.displayName}}</button>
+                    <button ng-repeat="(key, action) in actions" id="{{$parent.$index}}-{{key}}-btn" class="btn btn-default btn-sm" ng-show="action.show()" ng-click="action.fn(record)"><span class="glyphicon glyphicon-{{action.icon}}"></span> {{action.displayName}}</button>
                 </td>
             </tr>
         </tbody>

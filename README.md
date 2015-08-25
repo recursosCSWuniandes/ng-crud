@@ -13,6 +13,10 @@ Next, add the dependency to the module requiring it:
 ```javascript
 ng.module('mainApp', ['ngCrud']);
 ```
+
+#Documentation
+Documentation for this library can be found in its [GitHub Wiki](https://github.com/recursosCSWuniandes/ng-crud/wiki)
+
 #FAQ
 ##¿Por qué los archivos Javascript están creados dentro de una función?
 En Javascript, existe el concepto de [Closure](http://javascriptissexy.com/understand-javascript-closures-with-ease/). En este caso, los closure se usan para poder crear variables privadas (como por ejemplo cuando se crea un módulo) y evitar que las mismas sean creadas en el objeto `window`. Esto tambien ayuda a optimizar el uso de la memoria.
