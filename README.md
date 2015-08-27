@@ -1,23 +1,23 @@
-# Introduction
-AngularJS library to create CRUD and Master-Detail Web Applications.
+# Introducción
+Librería de AngularJS para crear aplicaciones web con operaciones CRUD y Maestro Detalle
 
-#Installation
-To import ngCrud in your web project, include the following line to your `index.html`
+# Instalación
+Para importar ngCrud en su proyecto web, incluya la siguiente línea en su `index.html`
 
 ```html
 <script src="https://rawgit.com/recursosCSWuniandes/ng-crud/master/dist/ngcrud-mocks.min.js"></script>
 ```
 
-Next, add the dependency to the module requiring it:
+Adicionalmente, añada la dependencia al módulo que lo requiere:
 
 ```javascript
 ng.module('mainApp', ['ngCrud']);
 ```
 
-#Documentation
-Documentation for this library can be found in its [GitHub Wiki](https://github.com/recursosCSWuniandes/ng-crud/wiki)
+# Documentación
+La documentación detallada puede encontrarse en su [wiki](https://github.com/recursosCSWuniandes/ng-crud/wiki)
 
-#FAQ
+# Preguntas frecuentes
 ##¿Por qué los archivos Javascript están creados dentro de una función?
 En Javascript, existe el concepto de [Closure](http://javascriptissexy.com/understand-javascript-closures-with-ease/). En este caso, los closure se usan para poder crear variables privadas (como por ejemplo cuando se crea un módulo) y evitar que las mismas sean creadas en el objeto `window`. Esto tambien ayuda a optimizar el uso de la memoria.
 
