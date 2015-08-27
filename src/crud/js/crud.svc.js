@@ -3,73 +3,78 @@
 
     mod.service('actionsService', [function () {
         this.buildGlobalActions = function (ctrl) {
-            return [{
-                name: 'create',
-                displayName: 'Create',
-                icon: 'plus',
-                fn: function () {
-                    ctrl.createRecord();
+            return {
+                create: {
+                    displayName: 'Create',
+                    icon: 'plus',
+                    fn: function () {
+                        ctrl.createRecord();
+                    },
+                    show: function () {
+                        return !ctrl.readOnly && !ctrl.editMode;
+                    }
                 },
-                show: function () {
-                    return !ctrl.readOnly && !ctrl.editMode;
-                }
-            }, {
-                name: 'refresh',
-                displayName: 'Refresh',
-                icon: 'refresh',
-                fn: function () {
-                    ctrl.fetchRecords();
+                refresh: {
+                    displayName: 'Refresh',
+                    icon: 'refresh',
+                    fn: function () {
+                        ctrl.fetchRecords();
+                    },
+                    show: function () {
+                        return !ctrl.editMode;
+                    }
                 },
-                show: function () {
-                    return !ctrl.editMode;
-                }
-            }, {
-                name: 'save',
-                displayName: 'Save',
-                icon: 'save',
-                fn: function () {
-                    ctrl.saveRecord();
+                save: {
+                    displayName: 'Save',
+                    icon: 'save',
+                    fn: function () {
+                        ctrl.saveRecord();
+                    },
+                    show: function () {
+                        return !ctrl.readOnly && ctrl.editMode;
+                    }
                 },
-                show: function () {
-                    return !ctrl.readOnly && ctrl.editMode;
+                cancel: {
+                    displayName: 'Cancel',
+                    icon: 'remove',
+                    fn: function () {
+                        ctrl.fetchRecords();
+                    }
+
+                    ,
+                    show: function () {
+                        return !ctrl.readOnly && ctrl.editMode;
+                    }
                 }
-            }, {
-                name: 'cancel',
-                displayName: 'Cancel',
-                icon: 'remove',
-                fn: function () {
-                    ctrl.fetchRecords();
-                },
-                show: function () {
-                    return !ctrl.readOnly && ctrl.editMode;
-                }
-            }
-            ];
+            };
         };
         this.buildRecordActions = function (ctrl) {
-            return [{
-                name: 'edit',
-                displayName: 'Edit',
-                icon: 'edit',
-                fn: function (rc) {
-                    ctrl.editRecord(rc);
+            return {
+                edit: {
+                    displayName: 'Edit',
+                    icon: 'edit',
+                    fn: function (rc) {
+                        ctrl.editRecord(rc);
+                    },
+                    show: function () {
+                        return !ctrl.readOnly;
+                    }
                 },
-                show: function () {
-                    return !ctrl.readOnly;
+                delete: {
+                    displayName: 'Delete',
+                    icon: 'minus',
+                    fn: function (rc) {
+                        ctrl.deleteRecord(rc);
+                    },
+                    show: function () {
+                        return !ctrl.readOnly;
+                    }
                 }
-            }, {
-                name: 'delete',
-                displayName: 'Delete',
-                icon: 'minus',
-                fn: function (rc) {
-                    ctrl.deleteRecord(rc);
-                },
-                show: function () {
-                    return !ctrl.readOnly;
-                }
-            }];
+            };
         };
-    }]);
+    }
+    ])
+    ;
 
     mod.service('CrudCreator', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', 'modalService', '$location', function (RestAngular, actionsBuilder, $injector, tplUrl, modalService, $location) {
 
@@ -380,4 +385,5 @@
             });
         };
     }]);
-})(window.angular, window.Math);
+})
+(window.angular, window.Math);
