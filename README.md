@@ -5,7 +5,7 @@ Librería de AngularJS para crear aplicaciones web con operaciones CRUD y Maestr
 Para importar ngCrud en su proyecto web, incluya la siguiente línea en su `index.html`
 
 ```html
-<script src="https://rawgit.com/recursosCSWuniandes/ng-crud/master/dist/ngcrud-mocks.min.js"></script>
+<script src="https://rawgit.com/recursosCSWuniandes/ng-crud/master/dist/ngcrud.min.js"></script>
 ```
 
 Adicionalmente, añada la dependencia al módulo que lo requiere:
