@@ -5,17 +5,11 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         concat: {
             dist: {
-                src: '<%= concat.dev.src %>',
-                dest: 'tmp/ngcrud.js'
-            },
-            dev: {
                 src: [
-                    'src/crud/js/crud.mod.js',
-                    'src/crud/js/crud.svc.js',
-                    'src/crud/js/crud.dir.js',
-                    'src/crud/js/crud.ctrl.js'
+                    'src/**/*.mod.js',
+                    'src/**/*.js'
                 ],
-                dest: '../../NetbeansProjects/mp-longplay/MusicStore.web/src/main/webapp/src/ngcrud.min.js'
+                dest: 'dist/ngcrud.js'
             }
         },
         ngtemplates: {
@@ -24,7 +18,7 @@ module.exports = function (grunt) {
                 append: true
             },
             dist: {
-                src: '<%= ngtemplates.dev.src %>',
+                src: 'src/crud/templates/**.html',
                 dest: '<%= concat.dist.dest %>',
                 options: {
                     htmlmin: {
@@ -33,10 +27,6 @@ module.exports = function (grunt) {
                         removeComments: true
                     }
                 }
-            },
-            dev: {
-                src: 'src/crud/templates/**.html',
-                dest: '<%= concat.dev.dest %>'
             }
         },
         uglify: {
@@ -45,8 +35,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: {
-                    'dist/ngcrud.min.js': '<%= concat.dist.dest %>',
-                    'dist/ngcrud-mocks.min.js': 'src/mocks/js/mocks.mod.js'
+                    'dist/ngcrud.min.js': '<%= concat.dist.dest %>'
                 }
             }
         }
@@ -59,7 +48,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
 
     grunt.registerTask('default', ['concat:dist', 'ngtemplates:dist', 'uglify:dist']);
-
-    grunt.registerTask('dev', ['concat:dev', 'ngtemplates:dev']);
 
 };
