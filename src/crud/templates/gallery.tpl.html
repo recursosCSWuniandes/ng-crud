@@ -18,7 +18,7 @@
                 </div>
             </div>
             <p ng-if="actions" class="text-center">
-                <button ng-repeat="(key, action) in actions" id="{{$parent.$index}}-{{key}}-btn" class="btn btn-default btn-sm" ng-show="action.show(record)" ng-click="action.fn(record)"><span class="glyphicon glyphicon-{{action.icon}}"></span> {{action.displayName}}</button>
+                <button ng-repeat="(key, action) in actions" id="{{$parent.$index}}-{{key}}-btn" class="btn btn-default btn-sm" ng-class="action.class" ng-show="action.show(record)" ng-click="action.fn(record)"><span class="glyphicon glyphicon-{{action.icon}}"></span> {{action.displayName}}</button>
             </p>
         </div>
     </div>
