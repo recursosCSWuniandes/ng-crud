@@ -1,8 +1,30 @@
 module.exports = function (grunt) {
 
+    // Time how long tasks take. Can help when optimizing build times
+    require('time-grunt')(grunt);
+
+    // Automatically load required Grunt tasks
+    require('jit-grunt')(grunt, {
+        ngtemplates: 'grunt-angular-templates'
+    });
+
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        // Empties folders to start fresh
+        clean: {
+            dist: {
+                files: [{
+                    dot: true,
+                    src: [
+                        '.tmp',
+                        'dist/{,*/}*',
+                        '!dist/.git{,*/}*'
+                    ]
+                }]
+            },
+            server: '.tmp'
+        },
         concat: {
             dist: {
                 src: [
@@ -41,12 +63,6 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.loadNpmTasks('grunt-angular-templates');
-
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-
-    grunt.loadNpmTasks('grunt-contrib-concat');
-
-    grunt.registerTask('default', ['concat:dist', 'ngtemplates:dist', 'uglify:dist']);
+    grunt.registerTask('default', ['clean', 'concat:dist', 'ngtemplates:dist', 'uglify:dist']);
 
 };
