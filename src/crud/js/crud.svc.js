@@ -252,7 +252,7 @@
         }
 
         function commonChildCtrl(scope, model, childName) {
-            extendCommonCtrl.call(this, scope, model, childName, childName);
+            extendCommonCtrl.call(this, scope, {fields: model.fields}, childName, childName);
 
             //Escucha de evento cuando se selecciona un registro maestro
             var self = this;
