@@ -1,11 +1,29 @@
 (function (ng) {
     var mod = ng.module('ngCrudMock', ['ngMockE2E']);
 
-    mod.constant('ngCrudMock.baseUrl', 'webresources');
+    mod.provider('MockConfig', [function () {
+
+        var config = {
+            baseUrl: 'api' //base path for rest api
+        };
+
+        this.setConfig = function (overrides) {
+            if (overrides) {
+                config = ng.extend(config, overrides);
+            }
+            return config;
+        };
+
+        this.$get = [function () {
+            return config;
+        }];
+    }]);
 
     mod.value('ngCrudMock.mockRecords', {});
 
-    mod.run(['$httpBackend', 'ngCrudMock.mockRecords', 'ngCrudMock.baseUrl', function ($httpBackend, mockRecords, baseUrl) {
+    mod.run(['$httpBackend', 'ngCrudMock.mockRecords', 'MockConfig', function ($httpBackend, mockRecords, config) {
+        var baseUrl = config.baseUrl;
+
         function getQueryParams(url) {
             var vars = {}, hash;
             var hashes = url.slice(url.indexOf('?') + 1).split('&');
@@ -31,9 +49,14 @@
             return mockRecords[entity];
         }
 
+        /*
+         * Regular expression for query parameters
+         * Accepts any number of query parameters in the format:
+         * ?param1=value1&param2=value2&...&paramN=valueN
+         */
         var queryParamsRegex = '(([?](\\w+=\\w+))([&](\\w+=\\w+))*)?$';
-        var collectionUrl = new RegExp(baseUrl + '/(\\w+)(/master)?' + queryParamsRegex);
-        var recordUrl = new RegExp(baseUrl + '/(\\w+)(/master)?/([0-9]+)' + queryParamsRegex);
+        var collectionUrl = new RegExp(baseUrl + '/(\\w+)' + queryParamsRegex);
+        var recordUrl = new RegExp(baseUrl + '/(\\w+)/([0-9]+)' + queryParamsRegex);
         var ignore_regexp = new RegExp('^((?!' + baseUrl + ').)*$');
 
         $httpBackend.whenGET(ignore_regexp).passThrough();
