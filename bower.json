@@ -1,30 +1,30 @@
 {
-  "name": "ng-crud",
-  "version": "0.0.0",
-  "homepage": "https://github.com/recursosCSWuniandes/ng-crud",
-  "authors": [
-    "Andrés Felipe Esguerra Restrepo <afesguerra@outlook.com>"
-  ],
-  "description": "AngularJS library for creating generic CRUD views",
-  "main": "./dist/ngcrud.js",
-  "keywords": [
-    "angular",
-    "crud",
-    "uniandes"
-  ],
-  "license": "MIT",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
-  "dependencies": {
-    "angular": "^1.4.5",
-    "angular-bootstrap": "^0.13.4",
-    "angular-mocks": "^1.4.5",
-    "bootstrap": "^3.3.5",
-    "restangular": "^1.5.1"
-  }
+    "name": "ng-crud",
+    "homepage": "https://github.com/recursosCSWuniandes/ng-crud",
+    "authors": [
+        "Andrés Felipe Esguerra Restrepo <afesguerra@outlook.com>"
+    ],
+    "description": "AngularJS library for creating generic CRUD views",
+    "main": "./dist/ngcrud.js",
+    "keywords": [
+        "angular",
+        "crud",
+        "uniandes"
+    ],
+    "license": "MIT",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ],
+    "dependencies": {
+        "angular": "^1.4.5",
+        "angular-bootstrap": "^0.13.4",
+        "angular-mocks": "^1.4.5",
+        "bootstrap": "^3.3.5",
+        "restangular": "^1.5.1",
+        "lodash": "^3.0.0"
+    }
 }

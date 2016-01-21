@@ -1,8 +1,8 @@
 {
     "name": "ng-crud",
-    "version": "0.0.1",
+    "version": "0.1.2",
     "description": "Services for creating CRUD applications with AngularJS",
-    "main": "index.js",
+    "main": "dist/ngcrud.js",
     "dependencies": {},
     "devDependencies": {
         "angular": "^1.4.3",
@@ -26,10 +26,14 @@
         "crud",
         "bootstrap"
     ],
-    "author": "kaosterra@gmail.com",
+    "author": "afesguerra@outlook.com",
     "license": "GPL-3.0",
     "bugs": {
         "url": "https://github.com/recursosCSWuniandes/ng-crud/issues"
     },
-    "homepage": "https://github.com/recursosCSWuniandes/ng-crud#readme"
+    "homepage": "https://github.com/recursosCSWuniandes/ng-crud#readme",
+    "engines":{
+        "node": "^0.12.7",
+        "npm": "^3.0.0"
+    }
 }

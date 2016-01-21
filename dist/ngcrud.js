@@ -10,7 +10,6 @@
     mod.constant('CrudCtrlAlias', 'ctrl');
 
     mod.config(['RestangularProvider', function (rp) {
-            rp.setBaseUrl('webresources');
             rp.addRequestInterceptor(function (data, operation) {
                 if (operation === "remove") {
                     return null;
