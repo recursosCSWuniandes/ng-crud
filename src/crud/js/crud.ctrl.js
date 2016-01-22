@@ -27,7 +27,7 @@
         }]);
 
     mod.controller('modalCtrl', ['$scope', '$modalInstance', 'items', 'name', 'currentItems', function ($scope, $modalInstance, items, name, currentItems) {
-            $scope.model = [{name: 'name', displayName: 'Name', type: 'String', order: 1}];
+            $scope.fields = [{name: 'name', displayName: 'Name', type: 'String'}];
             $scope.name = name;
             $scope.items = items;
 
@@ -40,7 +40,7 @@
                     });
                 });
             }
-            
+
             loadSelected(items, currentItems);
 
             function getSelectedItems() {

@@ -73,8 +73,7 @@
             };
         };
     }
-    ])
-    ;
+    ]);
 
     mod.service('CrudCreator', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', 'modalService', '$location', function (RestAngular, actionsBuilder, $injector, tplUrl, modalService, $location) {
 

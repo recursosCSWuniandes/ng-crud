@@ -28,17 +28,20 @@
 (function (ng) {
     var mod = ng.module('ngCrudMock', ['ngMockE2E']);
 
-    mod.provider('MockConfig', [function(){
+    mod.provider('MockConfig', [function () {
 
         var config = {
             baseUrl: 'api' //base path for rest api
         };
 
-        this.setConfig = function(overrides){
-            config = ng.extend(config, overrides);
+        this.setConfig = function (overrides) {
+            if (overrides) {
+                config = ng.extend(config, overrides);
+            }
+            return config;
         };
 
-        this.$get = [function(){
+        this.$get = [function () {
             return config;
         }];
     }]);
@@ -47,6 +50,7 @@
 
     mod.run(['$httpBackend', 'ngCrudMock.mockRecords', 'MockConfig', function ($httpBackend, mockRecords, config) {
         var baseUrl = config.baseUrl;
+
         function getQueryParams(url) {
             var vars = {}, hash;
             var hashes = url.slice(url.indexOf('?') + 1).split('&');
@@ -170,7 +174,7 @@
         }]);
 
     mod.controller('modalCtrl', ['$scope', '$modalInstance', 'items', 'name', 'currentItems', function ($scope, $modalInstance, items, name, currentItems) {
-            $scope.model = [{name: 'name', displayName: 'Name', type: 'String', order: 1}];
+            $scope.fields = [{name: 'name', displayName: 'Name', type: 'String'}];
             $scope.name = name;
             $scope.items = items;
 
@@ -183,7 +187,7 @@
                     });
                 });
             }
-            
+
             loadSelected(items, currentItems);
 
             function getSelectedItems() {
@@ -373,8 +377,7 @@
             };
         };
     }
-    ])
-    ;
+    ]);
 
     mod.service('CrudCreator', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', 'modalService', '$location', function (RestAngular, actionsBuilder, $injector, tplUrl, modalService, $location) {
 
@@ -716,7 +719,7 @@ angular.module('ngCrud').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('src/crud/templates/modal.tpl.html',
-    "<div class=\"modal-header\"><h3 class=\"modal-title\">{{name}}</h3></div><div class=\"modal-body\"><list-records model=\"model\" records=\"items\" checklist=\"true\"></list-records></div><div class=\"modal-footer\"><button class=\"btn btn-default btn-sm\" ng-click=\"ok()\"><span class=\"glyphicon glyphicon-ok\"></span> OK</button> <button class=\"btn btn-default btn-sm\" ng-click=\"cancel()\"><span class=\"glyphicon glyphicon-remove\"></span> Cancel</button></div>"
+    "<div class=\"modal-header\"><h3 class=\"modal-title\">{{name}}</h3></div><div class=\"modal-body\"><list-records fields=\"fields\" records=\"items\" checklist=\"true\"></list-records></div><div class=\"modal-footer\"><button class=\"btn btn-default btn-sm\" ng-click=\"ok()\"><span class=\"glyphicon glyphicon-ok\"></span> OK</button> <button class=\"btn btn-default btn-sm\" ng-click=\"cancel()\"><span class=\"glyphicon glyphicon-remove\"></span> Cancel</button></div>"
   );
 
 
