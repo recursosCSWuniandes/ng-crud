@@ -142,8 +142,8 @@
             //Código para cargar los valores de las referencias
             this.loadRefOptions = function () {
                 function loadFieldOptions(field) {
-                    var svc = $injector.get(field.service);
-                    svc.fetchRecords().then(function (data) {
+                    var url = $injector.get(field.url);
+                    RestAngular.all(url).getList().then(function (data) {
                         field.options = data.plain();
                         if (!field.required) {
                             field.options.unshift(null);
@@ -155,8 +155,8 @@
                 for (var i in model) {
                     if (model.hasOwnProperty(i)) {
                         var field = model[i];
-                        if (field.type === 'Reference' && !!field.service) {
-                            if ($injector.has(field.service)) {
+                        if (field.type === 'Reference' && !!field.url) {
+                            if ($injector.has(field.url)) {
                                 loadFieldOptions(field);
                             }
                         }
@@ -303,7 +303,7 @@
             //Servicio para obtener la lista completa de registros que se pueden seleccionar
             var svc = RestAngular.all(ctx);
 
-            var parentSvc = RestAngular.one(parent).all(name);
+            var parentSvc = RestAngular.one(parent, scope.refId).all(name);
 
             this.showList = function () {
                 var modal = modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);

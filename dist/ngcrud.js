@@ -459,8 +459,8 @@
             //Código para cargar los valores de las referencias
             this.loadRefOptions = function () {
                 function loadFieldOptions(field) {
-                    var svc = $injector.get(field.service);
-                    svc.fetchRecords().then(function (data) {
+                    var url = $injector.get(field.url);
+                    RestAngular.all(url).getList().then(function (data) {
                         field.options = data.plain();
                         if (!field.required) {
                             field.options.unshift(null);
@@ -472,8 +472,8 @@
                 for (var i in model) {
                     if (model.hasOwnProperty(i)) {
                         var field = model[i];
-                        if (field.type === 'Reference' && !!field.service) {
-                            if ($injector.has(field.service)) {
+                        if (field.type === 'Reference' && !!field.url) {
+                            if ($injector.has(field.url)) {
                                 loadFieldOptions(field);
                             }
                         }
@@ -620,7 +620,7 @@
             //Servicio para obtener la lista completa de registros que se pueden seleccionar
             var svc = RestAngular.all(ctx);
 
-            var parentSvc = RestAngular.one(parent).all(name);
+            var parentSvc = RestAngular.one(parent, scope.refId).all(name);
 
             this.showList = function () {
                 var modal = modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);
@@ -709,7 +709,7 @@ angular.module('ngCrud').run(['$templateCache', function($templateCache) {
   'use strict';
 
   $templateCache.put('src/crud/templates/crud.tpl.html',
-    "<toolbar name=\"name\" display-name=\"displayName\" actions=\"ctrl.globalActions\"></toolbar><alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"ctrl.closeAlert($index)\">{{alert.msg}}</alert><div ng-if=\"!ctrl.editMode\"><div ng-if=\"ctrl.asGallery\"><gallery fields=\"model.fields\" records=\"records\" actions=\"ctrl.recordActions\"></gallery></div><div ng-if=\"!ctrl.asGallery\"><list-records fields=\"model.fields\" records=\"records\" actions=\"ctrl.recordActions\"></list-records></div><div class=\"text-center\"><pagination ng-if=\"ctrl.numPages > 1\" num-pages=\"ctrl.numPages\" total-items=\"ctrl.totalItems\" ng-model=\"ctrl.currentPage\" ng-change=\"ctrl.pageChanged()\" items-per-page=\"ctrl.itemsPerPage\" max-size=\"ctrl.maxSize\" class=\"pagination-md\" boundary-links=\"true\" rotate=\"false\"></pagination></div></div><div ng-if=\"ctrl.editMode\"><div class=\"well\"><crud-form name=\"name\" fields=\"model.fields\" record=\"currentRecord\"></crud-form></div><div id=\"childs\" ng-if=\"model.childs\"><ul class=\"nav nav-tabs\"><li ng-repeat=\"child in model.childs\" role=\"presentation\" ng-class=\"{active: tab === child.name}\"><a href ng-click=\"ctrl.changeTab(child.name)\">{{child.displayName}}</a></li></ul><div ng-repeat=\"child in model.childs\" ng-show=\"tab === child.name\"><div child-controller></div></div></div></div>"
+    "<toolbar name=\"name\" display-name=\"displayName\" actions=\"ctrl.globalActions\"></toolbar><alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"ctrl.closeAlert($index)\">{{alert.msg}}</alert><div ng-if=\"!ctrl.editMode\"><div ng-if=\"ctrl.asGallery\"><gallery fields=\"model.fields\" records=\"records\" actions=\"ctrl.recordActions\"></gallery></div><div ng-if=\"!ctrl.asGallery\"><list-records fields=\"model.fields\" records=\"records\" actions=\"ctrl.recordActions\"></list-records></div><div class=\"text-center\"><pagination ng-if=\"ctrl.numPages > 1\" num-pages=\"ctrl.numPages\" total-items=\"ctrl.totalItems\" ng-model=\"ctrl.currentPage\" ng-change=\"ctrl.pageChanged()\" items-per-page=\"ctrl.itemsPerPage\" max-size=\"ctrl.maxSize\" class=\"pagination-md\" boundary-links=\"true\" rotate=\"false\"></pagination></div></div><div ng-if=\"ctrl.editMode\"><div class=\"well\"><crud-form name=\"name\" fields=\"model.fields\" record=\"currentRecord\"></crud-form></div><div id=\"childs\" ng-if=\"model.childs\"><ul class=\"nav nav-tabs\"><li ng-repeat=\"child in model.childs\" role=\"presentation\" ng-class=\"{active: tab === child.name}\" ng-if=\"currentRecord.id && child.owned\"><a href ng-click=\"ctrl.changeTab(child.name)\">{{child.displayName}}</a></li></ul><div ng-repeat=\"child in model.childs\" ng-show=\"tab === child.name\"><div child-controller></div></div></div></div>"
   );
 
 
