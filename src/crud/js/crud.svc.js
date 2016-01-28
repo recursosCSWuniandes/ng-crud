@@ -228,17 +228,17 @@
             };
         }
 
-        function commonChildCtrl(scope, model, childName, displayName) {
-            extendCommonCtrl.call(this, scope, {fields: model.fields}, childName, displayName);
+        function commonChildCtrl(scope, model, name, displayName) {
+            extendCommonCtrl.call(this, scope, {fields: model.fields}, name, displayName);
 
             //Escucha de evento cuando se selecciona un registro maestro
             var self = this;
 
             function onCreateOrEdit(event, args) {
-                if (args[childName] === undefined) {
-                    args[childName] = [];
+                if (args[name] === undefined) {
+                    args[name] = [];
                 }
-                scope.records = args[childName];
+                scope.records = args[name];
                 scope.refId = args.id;
                 if (self.fetchRecords) {
                     self.fetchRecords();
@@ -249,8 +249,8 @@
             scope.$on('post-edit', onCreateOrEdit);
         }
 
-        function compositeRelCtrl(scope, model, childName, parent) {
-            commonChildCtrl.call(this, scope, model, childName);
+        function compositeRelCtrl(scope, model, name, displayName, parent) {
+            commonChildCtrl.call(this, scope, model, name, displayName);
 
             scope.parent = parent;
 
@@ -297,13 +297,13 @@
             };
         }
 
-        function aggregateRelCtrl(scope, model, childName, parent, ctx) {
-            commonChildCtrl.call(this, scope, model, childName);
+        function aggregateRelCtrl(scope, model, name, displayName, parent, ctx) {
+            commonChildCtrl.call(this, scope, model, name, displayName);
 
             //Servicio para obtener la lista completa de registros que se pueden seleccionar
             var svc = RestAngular.all(ctx);
 
-            var parentSvc = RestAngular.one(parent).all(childName);
+            var parentSvc = RestAngular.one(parent).all(name);
 
             this.showList = function () {
                 var modal = modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);
@@ -357,10 +357,12 @@
             extendCtrl.call(options.ctrl, options.scope, options.model, options.url, options.name, options.displayName);
         };
         this.extendCompChildCtrl = function (options) {
-            compositeRelCtrl.call(options.ctrl, options.scope, options.model, options.name, options.parent);
+            compositeRelCtrl.call(options.ctrl, options.scope, options.model, options.name, options.displayName,
+                options.parentUrl);
         };
         this.extendAggChildCtrl = function (options) {
-            aggregateRelCtrl.call(options.ctrl, options.scope, options.model, options.name, options.parent, options.ctx);
+            aggregateRelCtrl.call(options.ctrl, options.scope, options.model, options.name,
+                options.displayName, options.parentUrl, options.listUrl);
         };
     }]);
 
