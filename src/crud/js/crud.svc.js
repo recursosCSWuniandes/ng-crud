@@ -171,7 +171,7 @@
             this.recordActions = actionsBuilder.buildRecordActions(this);
         }
 
-        function extendCtrl(scope, model, svc, name, displayName) {
+        function extendCtrl(scope, model, url, name, displayName) {
             extendCommonCtrl.call(this, scope, model, name, displayName);
             var self = this;
 
@@ -184,6 +184,18 @@
                 scope.tab = tab;
             };
 
+            this.fetchRecords = function () {
+                var queryParams = {page: this.currentPage, maxRecords: this.itemsPerPage};
+                ng.extend(queryParams, $location.search());
+                return RestAngular.all(url).getList(queryParams).then(function (data) {
+                    scope.records = data;
+                    self.totalItems = data.totalRecords;
+                    scope.currentRecord = {};
+                    self.editMode = false;
+                    return data;
+                }, responseError);
+            };
+
             this.createRecord = function () {
                 scope.$broadcast('pre-create', scope.currentRecord);
                 this.editMode = true;
@@ -193,60 +205,22 @@
 
             this.editRecord = function (record) {
                 scope.$broadcast('pre-edit', record);
-                return svc.fetchRecord(record).then(function (data) {
+                return record.get().then(function (data) {
                     scope.currentRecord = data;
                     self.editMode = true;
                     scope.$broadcast('post-edit', data);
                     return data;
                 }, responseError);
             };
-
-            this.fetchRecords = function () {
-                var queryParams = {page: this.currentPage, maxRecords: this.itemsPerPage};
-                ng.extend(queryParams, $location.search());
-                return svc.fetchRecords(queryParams).then(function (data) {
-                    scope.records = data;
-                    self.totalItems = data.totalRecords;
-                    scope.currentRecord = {};
-                    self.editMode = false;
-                    return data;
-                }, responseError);
-            };
             this.saveRecord = function () {
-                return svc.saveRecord(scope.currentRecord).then(function () {
+                (currentRecord.id?currentRecord.put():scope.records.post(currentRecord)).then(function(){
                     self.fetchRecords();
                 }, responseError);
             };
             this.deleteRecord = function (record) {
-                return svc.deleteRecord(record).then(function () {
+                return record.remove().then(function () {
                     self.fetchRecords();
                 }, responseError);
-            };
-        }
-
-        function extendSvc(url) {
-            this.url = url;
-            this.api = RestAngular.all(this.url);
-
-            this.fetchRecords = function (queryParams, headers) {
-                return this.api.getList(queryParams, headers);
-            };
-
-            this.fetchRecord = function (record) {
-                return record.get();
-            };
-            this.saveRecord = function (currentRecord) {
-                if (currentRecord.id) {
-                    return currentRecord.put();
-                } else {
-                    return this.api.post(currentRecord);
-                }
-            };
-            this.deleteRecord = function (record) {
-                return record.remove();
-            };
-            this.extendController = function (ctrl, scope, model, name, displayName) {
-                extendCtrl.call(ctrl, scope, model, this, name, displayName);
             };
         }
 
@@ -344,18 +318,9 @@
             delete this.recordActions;
         }
 
-        this.extendCommonController = function (ctrl, scope, model, name, displayName) {
-            extendCommonCtrl.call(ctrl, scope, model, name, displayName);
+        this.extendController = function (ctrl, scope, model, url, name, displayName) {
+            extendCtrl.call(ctrl, scope, model, url, name, displayName);
         };
-
-        this.extendService = function (svc, ctx) {
-            extendSvc.call(svc, ctx);
-        };
-
-        this.extendController = function (ctrl, svc, scope, model, name, displayName) {
-            extendCtrl.call(ctrl, scope, model, svc, name, displayName);
-        };
-
         this.extendCompChildCtrl = function (ctrl, scope, model, childName, refName) {
             compositeRelCtrl.call(ctrl, scope, model, childName, refName);
         };
