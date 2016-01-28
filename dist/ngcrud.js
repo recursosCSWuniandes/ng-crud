@@ -149,61 +149,74 @@
     var mod = ng.module('ngCrud');
 
     mod.controller('listCtrl', ['$scope', function ($scope) {
-            $scope.checkAll = function () {
-                this.records.forEach(function (item) {
-                    item.selected = !item.selected;
-                });
-            };
-        }]);
+        $scope.checkAll = function () {
+            this.records.forEach(function (item) {
+                item.selected = !item.selected;
+            });
+        };
+    }]);
 
     mod.controller('datePickerCtrl', ['$scope', function ($scope) {
-            $scope.today = function () {
-                $scope.value = new Date();
-            };
+        $scope.today = function () {
+            $scope.value = new Date();
+        };
 
-            $scope.clear = function () {
-                $scope.value = null;
-            };
+        $scope.clear = function () {
+            $scope.value = null;
+        };
 
-            $scope.open = function ($event) {
-                $event.preventDefault();
-                $event.stopPropagation();
+        $scope.open = function ($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
 
-                $scope.opened = true;
-            };
-        }]);
+            $scope.opened = true;
+        };
+    }]);
 
     mod.controller('modalCtrl', ['$scope', '$modalInstance', 'items', 'name', 'currentItems', function ($scope, $modalInstance, items, name, currentItems) {
-            $scope.fields = [{name: 'name', displayName: 'Name', type: 'String'}];
-            $scope.name = name;
-            $scope.items = items;
+        $scope.fields = [{name: 'name', displayName: 'Name', type: 'String'}];
+        $scope.name = name;
+        $scope.items = items;
 
-            function loadSelected(list, selected) {
-                ng.forEach(selected, function (selectedValue) {
-                    ng.forEach(list, function (listValue) {
-                        if (listValue.id === selectedValue.id) {
-                            listValue.selected = true;
-                        }
-                    });
-                });
+        $scope.recordActions = {
+            add: {
+                displayName: 'Add',
+                icon: 'plus',
+                fn: function (rc) {
+                    ctrl.editRecord(rc);
+                },
+                show: function () {
+                    return !ctrl.readOnly;
+                }
             }
+        };
 
-            loadSelected(items, currentItems);
-
-            function getSelectedItems() {
-                return $scope.items.filter(function (item) {
-                    return !!item.selected;
+        function loadSelected(list, selected) {
+            ng.forEach(selected, function (selectedValue) {
+                ng.forEach(list, function (listValue) {
+                    if (listValue.id === selectedValue.id) {
+                        listValue.selected = true;
+                    }
                 });
-            }
+            });
+        }
 
-            $scope.ok = function () {
-                $modalInstance.close(getSelectedItems());
-            };
+        loadSelected(items, currentItems);
 
-            $scope.cancel = function () {
-                $modalInstance.dismiss('cancel');
-            };
-        }]);
+        function getSelectedItems() {
+            return $scope.items.filter(function (item) {
+                return !!item.selected;
+            });
+        }
+
+        $scope.ok = function () {
+            $modalInstance.close(getSelectedItems());
+        };
+
+        $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
+    }]);
 })(window.angular);
 
 (function (ng) {
@@ -305,81 +318,79 @@
 (function (ng, Math) {
     var mod = ng.module('ngCrud');
 
-    mod.service('actionsService', [function () {
-        this.buildGlobalActions = function (ctrl) {
-            return {
-                create: {
-                    displayName: 'Create',
-                    icon: 'plus',
-                    fn: function () {
-                        ctrl.createRecord();
-                    },
-                    show: function () {
-                        return !ctrl.readOnly && !ctrl.editMode;
-                    }
+    function buildGlobalActions(ctrl) {
+        return {
+            create: {
+                displayName: 'Create',
+                icon: 'plus',
+                fn: function () {
+                    ctrl.createRecord();
                 },
-                refresh: {
-                    displayName: 'Refresh',
-                    icon: 'refresh',
-                    fn: function () {
-                        ctrl.fetchRecords();
-                    },
-                    show: function () {
-                        return !ctrl.editMode;
-                    }
+                show: function () {
+                    return !ctrl.readOnly && !ctrl.editMode;
+                }
+            },
+            refresh: {
+                displayName: 'Refresh',
+                icon: 'refresh',
+                fn: function () {
+                    ctrl.fetchRecords();
                 },
-                save: {
-                    displayName: 'Save',
-                    icon: 'save',
-                    fn: function () {
-                        ctrl.saveRecord();
-                    },
-                    show: function () {
-                        return !ctrl.readOnly && ctrl.editMode;
-                    }
+                show: function () {
+                    return !ctrl.editMode;
+                }
+            },
+            save: {
+                displayName: 'Save',
+                icon: 'save',
+                fn: function () {
+                    ctrl.saveRecord();
                 },
-                cancel: {
-                    displayName: 'Cancel',
-                    icon: 'remove',
-                    fn: function () {
-                        ctrl.fetchRecords();
-                    }
+                show: function () {
+                    return !ctrl.readOnly && ctrl.editMode;
+                }
+            },
+            cancel: {
+                displayName: 'Cancel',
+                icon: 'remove',
+                fn: function () {
+                    ctrl.fetchRecords();
+                }
 
-                    ,
-                    show: function () {
-                        return !ctrl.readOnly && ctrl.editMode;
-                    }
+                ,
+                show: function () {
+                    return !ctrl.readOnly && ctrl.editMode;
                 }
-            };
-        };
-        this.buildRecordActions = function (ctrl) {
-            return {
-                edit: {
-                    displayName: 'Edit',
-                    icon: 'edit',
-                    fn: function (rc) {
-                        ctrl.editRecord(rc);
-                    },
-                    show: function () {
-                        return !ctrl.readOnly;
-                    }
-                },
-                delete: {
-                    displayName: 'Delete',
-                    icon: 'minus',
-                    fn: function (rc) {
-                        ctrl.deleteRecord(rc);
-                    },
-                    show: function () {
-                        return !ctrl.readOnly;
-                    }
-                }
-            };
+            }
         };
     }
-    ]);
 
-    mod.service('CrudCreator', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', 'modalService', '$location', function (RestAngular, actionsBuilder, $injector, tplUrl, modalService, $location) {
+    function buildRecordActions(ctrl) {
+        return {
+            edit: {
+                displayName: 'Edit',
+                icon: 'edit',
+                fn: function (rc) {
+                    ctrl.editRecord(rc);
+                },
+                show: function () {
+                    return !ctrl.readOnly;
+                }
+            },
+            delete: {
+                displayName: 'Delete',
+                icon: 'minus',
+                fn: function (rc) {
+                    ctrl.deleteRecord(rc);
+                },
+                show: function () {
+                    return !ctrl.readOnly;
+                }
+            }
+        };
+    }
+
+    mod.service('CrudCreator', ['Restangular', '$injector', 'CrudTemplateURL', 'modalService', '$location', function (RestAngular, $injector, tplUrl, modalService, $location) {
 
         /*
          * Función constructora para un controlador con funcionalidad genérica.
@@ -471,8 +482,8 @@
             };
 
             //Configuración de acciones
-            this.globalActions = actionsBuilder.buildGlobalActions(this);
-            this.recordActions = actionsBuilder.buildRecordActions(this);
+            this.globalActions = buildGlobalActions(this);
+            this.recordActions = buildRecordActions(this);
         }
 
         function extendCtrl(scope, model, url, name, displayName) {
@@ -518,12 +529,12 @@
             };
             this.saveRecord = function () {
                 var promise, record = scope.currentRecord;
-                if(record.id){
+                if (record.id) {
                     promise = record.put();
-                }else{
+                } else {
                     promise = scope.records.post(record);
                 }
-                promise.then(function(){
+                promise.then(function () {
                     self.fetchRecords();
                 }, responseError);
             };
@@ -534,8 +545,8 @@
             };
         }
 
-        function commonChildCtrl(scope, model, childName) {
-            extendCommonCtrl.call(this, scope, {fields: model.fields}, childName, childName);
+        function commonChildCtrl(scope, model, childName, displayName) {
+            extendCommonCtrl.call(this, scope, {fields: model.fields}, childName, displayName);
 
             //Escucha de evento cuando se selecciona un registro maestro
             var self = this;
@@ -555,10 +566,10 @@
             scope.$on('post-edit', onCreateOrEdit);
         }
 
-        function compositeRelCtrl(scope, model, childName, refName) {
+        function compositeRelCtrl(scope, model, childName, parent) {
             commonChildCtrl.call(this, scope, model, childName);
 
-            scope.refName = refName;
+            scope.parent = parent;
 
             //Función para encontrar un registro por ID o CID
             function indexOf(rc) {
@@ -584,7 +595,7 @@
                     scope.records.splice(idx, 1, rc);
                 } else {
                     rc.cid = -Math.floor(Math.random() * 10000);
-                    rc[scope.refName] = {id: scope.refId};
+                    rc[scope.parent] = {id: scope.refId};
                     scope.records.push(rc);
                 }
                 this.fetchRecords();
@@ -603,17 +614,36 @@
             };
         }
 
-        function aggregateRelCtrl(scope, model, childName, svc) {
+        function aggregateRelCtrl(scope, model, childName, parent, ctx) {
             commonChildCtrl.call(this, scope, model, childName);
+
+            //Servicio para obtener la lista completa de registros que se pueden seleccionar
+            var svc = RestAngular.all(ctx);
+
+            var parentSvc = RestAngular.one(parent).all(childName);
+
             this.showList = function () {
-                var modal = modalService.createSelectionModal(childName, svc.fetchRecords(), scope.records);
-                modal.result.then(function (data) {
-                    scope.records.splice.call(scope.records, 0, scope.records.length);
-                    scope.records.push.apply(scope.records, data);
-                });
+                var modal = modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);
+                //modal.result.then(function (data) {});
             };
 
             var self = this;
+
+            this.fetchRecords = function(){
+                return parentSvc.getList().then(function(data){
+                    scope.records = data;
+                    return data;
+                });
+            };
+
+            this.deleteRecord = function(rc){
+                return rc.remove().then(this.fetchRecords);
+            };
+
+            this.addRecord = function(rc){
+                return scope.records.post(rc).then(this.fetchRecords);
+            };
+
             this.globalActions = [{
                 name: 'select',
                 displayName: 'Select',
@@ -625,17 +655,29 @@
                     return !self.editMode;
                 }
             }];
-            delete this.recordActions;
+
+            this.recordActions = {
+                delete: {
+                    displayName: 'Delete',
+                    icon: 'minus',
+                    fn: function (rc) {
+                        self.deleteRecord(rc);
+                    },
+                    show: function () {
+                        return !self.readOnly;
+                    }
+                }
+            };
         }
 
-        this.extendController = function (ctrl, scope, model, url, name, displayName) {
-            extendCtrl.call(ctrl, scope, model, url, name, displayName);
+        this.extendController = function (options) {
+            extendCtrl.call(options.ctrl, options.scope, options.model, options.url, options.name, options.displayName);
         };
-        this.extendCompChildCtrl = function (ctrl, scope, model, childName, refName) {
-            compositeRelCtrl.call(ctrl, scope, model, childName, refName);
+        this.extendCompChildCtrl = function (options) {
+            compositeRelCtrl.call(options.ctrl, options.scope, options.model, options.name, options.parent);
         };
-        this.extendAggChildCtrl = function (ctrl, scope, model, childName, svc) {
-            aggregateRelCtrl.call(ctrl, scope, model, childName, svc);
+        this.extendAggChildCtrl = function (options) {
+            aggregateRelCtrl.call(options.ctrl, options.scope, options.model, options.name, options.parent, options.ctx);
         };
     }]);
 
@@ -665,7 +707,7 @@ angular.module('ngCrud').run(['$templateCache', function($templateCache) {
   'use strict';
 
   $templateCache.put('src/crud/templates/crud.tpl.html',
-    "<toolbar name=\"name\" display-name=\"displayName\" actions=\"ctrl.globalActions\"></toolbar><alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"ctrl.closeAlert($index)\">{{alert.msg}}</alert><div ng-hide=\"ctrl.editMode\"><div ng-if=\"ctrl.asGallery\"><gallery fields=\"model.fields\" records=\"records\" actions=\"ctrl.recordActions\"></gallery></div><div ng-if=\"!ctrl.asGallery\"><list-records fields=\"model.fields\" records=\"records\" actions=\"ctrl.recordActions\"></list-records></div><div class=\"text-center\"><pagination ng-show=\"ctrl.numPages > 1\" num-pages=\"ctrl.numPages\" total-items=\"ctrl.totalItems\" ng-model=\"ctrl.currentPage\" ng-change=\"ctrl.pageChanged()\" items-per-page=\"ctrl.itemsPerPage\" max-size=\"ctrl.maxSize\" class=\"pagination-md\" boundary-links=\"true\" rotate=\"false\"></pagination></div></div><div ng-show=\"ctrl.editMode\" class=\"well\"><crud-form name=\"name\" fields=\"model.fields\" record=\"currentRecord\"></crud-form></div><div id=\"childs\" ng-show=\"ctrl.editMode\" ng-if=\"model.childs\"><ul class=\"nav nav-tabs\"><li ng-repeat=\"child in model.childs\" role=\"presentation\" ng-class=\"{active: tab === child.name}\"><a href ng-click=\"ctrl.changeTab(child.name)\">{{child.displayName}}</a></li></ul><div ng-repeat=\"child in model.childs\" ng-show=\"tab === child.name\"><div child-controller></div></div></div>"
+    "<toolbar name=\"name\" display-name=\"displayName\" actions=\"ctrl.globalActions\"></toolbar><alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"ctrl.closeAlert($index)\">{{alert.msg}}</alert><div ng-if=\"!ctrl.editMode\"><div ng-if=\"ctrl.asGallery\"><gallery fields=\"model.fields\" records=\"records\" actions=\"ctrl.recordActions\"></gallery></div><div ng-if=\"!ctrl.asGallery\"><list-records fields=\"model.fields\" records=\"records\" actions=\"ctrl.recordActions\"></list-records></div><div class=\"text-center\"><pagination ng-if=\"ctrl.numPages > 1\" num-pages=\"ctrl.numPages\" total-items=\"ctrl.totalItems\" ng-model=\"ctrl.currentPage\" ng-change=\"ctrl.pageChanged()\" items-per-page=\"ctrl.itemsPerPage\" max-size=\"ctrl.maxSize\" class=\"pagination-md\" boundary-links=\"true\" rotate=\"false\"></pagination></div></div><div ng-if=\"ctrl.editMode\" class=\"well\"><crud-form name=\"name\" fields=\"model.fields\" record=\"currentRecord\"></crud-form><div id=\"childs\" ng-if=\"model.childs\"><ul class=\"nav nav-tabs\"><li ng-repeat=\"child in model.childs\" role=\"presentation\" ng-class=\"{active: tab === child.name}\"><a href ng-click=\"ctrl.changeTab(child.name)\">{{child.displayName}}</a></li></ul><div ng-repeat=\"child in model.childs\" ng-if=\"tab === child.name\"><div child-controller></div></div></div></div>"
   );
 
 
@@ -690,7 +732,7 @@ angular.module('ngCrud').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('src/crud/templates/modal.tpl.html',
-    "<div class=\"modal-header\"><h3 class=\"modal-title\">{{name}}</h3></div><div class=\"modal-body\"><list-records fields=\"fields\" records=\"items\" checklist=\"true\"></list-records></div><div class=\"modal-footer\"><button class=\"btn btn-default btn-sm\" ng-click=\"ok()\"><span class=\"glyphicon glyphicon-ok\"></span> OK</button> <button class=\"btn btn-default btn-sm\" ng-click=\"cancel()\"><span class=\"glyphicon glyphicon-remove\"></span> Cancel</button></div>"
+    "<div class=\"modal-header\"><h3 class=\"modal-title\">{{name}}</h3></div><div class=\"modal-body\"><list-records fields=\"fields\" records=\"items\" actions=\"recordActions\"></list-records></div><div class=\"modal-footer\"><button class=\"btn btn-default btn-sm\" ng-click=\"ok()\"><span class=\"glyphicon glyphicon-ok\"></span> OK</button> <button class=\"btn btn-default btn-sm\" ng-click=\"cancel()\"><span class=\"glyphicon glyphicon-remove\"></span> Cancel</button></div>"
   );
 
 

@@ -1,81 +1,79 @@
 (function (ng, Math) {
     var mod = ng.module('ngCrud');
 
-    mod.service('actionsService', [function () {
-        this.buildGlobalActions = function (ctrl) {
-            return {
-                create: {
-                    displayName: 'Create',
-                    icon: 'plus',
-                    fn: function () {
-                        ctrl.createRecord();
-                    },
-                    show: function () {
-                        return !ctrl.readOnly && !ctrl.editMode;
-                    }
+    function buildGlobalActions(ctrl) {
+        return {
+            create: {
+                displayName: 'Create',
+                icon: 'plus',
+                fn: function () {
+                    ctrl.createRecord();
                 },
-                refresh: {
-                    displayName: 'Refresh',
-                    icon: 'refresh',
-                    fn: function () {
-                        ctrl.fetchRecords();
-                    },
-                    show: function () {
-                        return !ctrl.editMode;
-                    }
+                show: function () {
+                    return !ctrl.readOnly && !ctrl.editMode;
+                }
+            },
+            refresh: {
+                displayName: 'Refresh',
+                icon: 'refresh',
+                fn: function () {
+                    ctrl.fetchRecords();
                 },
-                save: {
-                    displayName: 'Save',
-                    icon: 'save',
-                    fn: function () {
-                        ctrl.saveRecord();
-                    },
-                    show: function () {
-                        return !ctrl.readOnly && ctrl.editMode;
-                    }
+                show: function () {
+                    return !ctrl.editMode;
+                }
+            },
+            save: {
+                displayName: 'Save',
+                icon: 'save',
+                fn: function () {
+                    ctrl.saveRecord();
                 },
-                cancel: {
-                    displayName: 'Cancel',
-                    icon: 'remove',
-                    fn: function () {
-                        ctrl.fetchRecords();
-                    }
+                show: function () {
+                    return !ctrl.readOnly && ctrl.editMode;
+                }
+            },
+            cancel: {
+                displayName: 'Cancel',
+                icon: 'remove',
+                fn: function () {
+                    ctrl.fetchRecords();
+                }
 
-                    ,
-                    show: function () {
-                        return !ctrl.readOnly && ctrl.editMode;
-                    }
+                ,
+                show: function () {
+                    return !ctrl.readOnly && ctrl.editMode;
                 }
-            };
-        };
-        this.buildRecordActions = function (ctrl) {
-            return {
-                edit: {
-                    displayName: 'Edit',
-                    icon: 'edit',
-                    fn: function (rc) {
-                        ctrl.editRecord(rc);
-                    },
-                    show: function () {
-                        return !ctrl.readOnly;
-                    }
-                },
-                delete: {
-                    displayName: 'Delete',
-                    icon: 'minus',
-                    fn: function (rc) {
-                        ctrl.deleteRecord(rc);
-                    },
-                    show: function () {
-                        return !ctrl.readOnly;
-                    }
-                }
-            };
+            }
         };
     }
-    ]);
 
-    mod.service('CrudCreator', ['Restangular', 'actionsService', '$injector', 'CrudTemplateURL', 'modalService', '$location', function (RestAngular, actionsBuilder, $injector, tplUrl, modalService, $location) {
+    function buildRecordActions(ctrl) {
+        return {
+            edit: {
+                displayName: 'Edit',
+                icon: 'edit',
+                fn: function (rc) {
+                    ctrl.editRecord(rc);
+                },
+                show: function () {
+                    return !ctrl.readOnly;
+                }
+            },
+            delete: {
+                displayName: 'Delete',
+                icon: 'minus',
+                fn: function (rc) {
+                    ctrl.deleteRecord(rc);
+                },
+                show: function () {
+                    return !ctrl.readOnly;
+                }
+            }
+        };
+    }
+
+    mod.service('CrudCreator', ['Restangular', '$injector', 'CrudTemplateURL', 'modalService', '$location', function (RestAngular, $injector, tplUrl, modalService, $location) {
 
         /*
          * Función constructora para un controlador con funcionalidad genérica.
@@ -167,8 +165,8 @@
             };
 
             //Configuración de acciones
-            this.globalActions = actionsBuilder.buildGlobalActions(this);
-            this.recordActions = actionsBuilder.buildRecordActions(this);
+            this.globalActions = buildGlobalActions(this);
+            this.recordActions = buildRecordActions(this);
         }
 
         function extendCtrl(scope, model, url, name, displayName) {
@@ -214,12 +212,12 @@
             };
             this.saveRecord = function () {
                 var promise, record = scope.currentRecord;
-                if(record.id){
+                if (record.id) {
                     promise = record.put();
-                }else{
+                } else {
                     promise = scope.records.post(record);
                 }
-                promise.then(function(){
+                promise.then(function () {
                     self.fetchRecords();
                 }, responseError);
             };
@@ -230,8 +228,8 @@
             };
         }
 
-        function commonChildCtrl(scope, model, childName) {
-            extendCommonCtrl.call(this, scope, {fields: model.fields}, childName, childName);
+        function commonChildCtrl(scope, model, childName, displayName) {
+            extendCommonCtrl.call(this, scope, {fields: model.fields}, childName, displayName);
 
             //Escucha de evento cuando se selecciona un registro maestro
             var self = this;
@@ -251,10 +249,10 @@
             scope.$on('post-edit', onCreateOrEdit);
         }
 
-        function compositeRelCtrl(scope, model, childName, refName) {
+        function compositeRelCtrl(scope, model, childName, parent) {
             commonChildCtrl.call(this, scope, model, childName);
 
-            scope.refName = refName;
+            scope.parent = parent;
 
             //Función para encontrar un registro por ID o CID
             function indexOf(rc) {
@@ -280,7 +278,7 @@
                     scope.records.splice(idx, 1, rc);
                 } else {
                     rc.cid = -Math.floor(Math.random() * 10000);
-                    rc[scope.refName] = {id: scope.refId};
+                    rc[scope.parent] = {id: scope.refId};
                     scope.records.push(rc);
                 }
                 this.fetchRecords();
@@ -299,17 +297,36 @@
             };
         }
 
-        function aggregateRelCtrl(scope, model, childName, svc) {
+        function aggregateRelCtrl(scope, model, childName, parent, ctx) {
             commonChildCtrl.call(this, scope, model, childName);
+
+            //Servicio para obtener la lista completa de registros que se pueden seleccionar
+            var svc = RestAngular.all(ctx);
+
+            var parentSvc = RestAngular.one(parent).all(childName);
+
             this.showList = function () {
-                var modal = modalService.createSelectionModal(childName, svc.fetchRecords(), scope.records);
-                modal.result.then(function (data) {
-                    scope.records.splice.call(scope.records, 0, scope.records.length);
-                    scope.records.push.apply(scope.records, data);
-                });
+                var modal = modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);
+                //modal.result.then(function (data) {});
             };
 
             var self = this;
+
+            this.fetchRecords = function(){
+                return parentSvc.getList().then(function(data){
+                    scope.records = data;
+                    return data;
+                });
+            };
+
+            this.deleteRecord = function(rc){
+                return rc.remove().then(this.fetchRecords);
+            };
+
+            this.addRecord = function(rc){
+                return scope.records.post(rc).then(this.fetchRecords);
+            };
+
             this.globalActions = [{
                 name: 'select',
                 displayName: 'Select',
@@ -321,17 +338,29 @@
                     return !self.editMode;
                 }
             }];
-            delete this.recordActions;
+
+            this.recordActions = {
+                delete: {
+                    displayName: 'Delete',
+                    icon: 'minus',
+                    fn: function (rc) {
+                        self.deleteRecord(rc);
+                    },
+                    show: function () {
+                        return !self.readOnly;
+                    }
+                }
+            };
         }
 
-        this.extendController = function (ctrl, scope, model, url, name, displayName) {
-            extendCtrl.call(ctrl, scope, model, url, name, displayName);
+        this.extendController = function (options) {
+            extendCtrl.call(options.ctrl, options.scope, options.model, options.url, options.name, options.displayName);
         };
-        this.extendCompChildCtrl = function (ctrl, scope, model, childName, refName) {
-            compositeRelCtrl.call(ctrl, scope, model, childName, refName);
+        this.extendCompChildCtrl = function (options) {
+            compositeRelCtrl.call(options.ctrl, options.scope, options.model, options.name, options.parent);
         };
-        this.extendAggChildCtrl = function (ctrl, scope, model, childName, svc) {
-            aggregateRelCtrl.call(ctrl, scope, model, childName, svc);
+        this.extendAggChildCtrl = function (options) {
+            aggregateRelCtrl.call(options.ctrl, options.scope, options.model, options.name, options.parent, options.ctx);
         };
     }]);
 
