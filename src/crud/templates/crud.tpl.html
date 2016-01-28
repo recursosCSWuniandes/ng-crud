@@ -21,8 +21,10 @@
                     max-size="ctrl.maxSize" class="pagination-md" boundary-links="true" rotate="false"></pagination>
     </div>
 </div>
-<div ng-if="ctrl.editMode" class="well">
-    <crud-form name="name" fields="model.fields" record="currentRecord"></crud-form>
+<div ng-if="ctrl.editMode">
+    <div class="well">
+        <crud-form name="name" fields="model.fields" record="currentRecord"></crud-form>
+    </div>
     <div id="childs" ng-if="model.childs">
         <ul class="nav nav-tabs">
             <li ng-repeat="child in model.childs"
@@ -32,7 +34,7 @@
             </li>
         </ul>
         <div ng-repeat="child in model.childs"
-             ng-if="tab === child.name">
+             ng-show="tab === child.name">
             <div child-controller></div>
         </div>
     </div>
