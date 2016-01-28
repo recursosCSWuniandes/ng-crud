@@ -30,7 +30,7 @@
             <li ng-repeat="child in model.childs"
                 role="presentation"
                 ng-class="{active: tab === child.name}"
-                ng-if="currentRecord.id && child.owned">
+                ng-show="currentRecord.id && child.owned">
                 <a href ng-click="ctrl.changeTab(child.name)">{{child.displayName}}</a>
             </li>
         </ul>

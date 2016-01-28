@@ -141,6 +141,7 @@
 
             //Código para cargar los valores de las referencias
             this.loadRefOptions = function () {
+                var self = this;
                 function loadFieldOptions(field) {
                     var url = $injector.get(field.url);
                     RestAngular.all(url).getList().then(function (data) {
@@ -148,6 +149,8 @@
                         if (!field.required) {
                             field.options.unshift(null);
                         }
+                    }, function(response){
+                        self.showError(response.data);
                     });
                 }
 
