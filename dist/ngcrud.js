@@ -517,7 +517,13 @@
                 }, responseError);
             };
             this.saveRecord = function () {
-                (currentRecord.id?currentRecord.put():scope.records.post(currentRecord)).then(function(){
+                var promise, record = scope.currentRecord;
+                if(record.id){
+                    promise = record.put();
+                }else{
+                    promise = scope.records.post(record);
+                }
+                promise.then(function(){
                     self.fetchRecords();
                 }, responseError);
             };
