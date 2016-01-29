@@ -319,8 +319,8 @@
 
             this.showList = function () {
                 var modal = modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);
-                modal.result.then(function (data) {
-
+                modal.result.then(function () {
+                    self.fetchRecords();
                 });
             };
 

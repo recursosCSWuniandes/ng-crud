@@ -30,7 +30,7 @@
         function ($scope, $modalInstance, items, name, currentItems) {
         $scope.fields = [{name: 'name', displayName: 'Name', type: 'String'}];
         $scope.name = name;
-        $scope.items = items;
+        $scope.items = items.plain();
         var self = this;
 
         $scope.recordActions = {
@@ -38,7 +38,8 @@
                 displayName: 'Add',
                 icon: 'plus',
                 fn: function (rc) {
-                    currentItems.post(rc);
+                    rc.selected = true;
+                    currentItems.customPOST(rc, rc.id);
                 },
                 show: function (rc) {
                     return !self.readOnly && rc.selected;
