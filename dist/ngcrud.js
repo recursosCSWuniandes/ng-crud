@@ -177,16 +177,17 @@
         $scope.fields = [{name: 'name', displayName: 'Name', type: 'String'}];
         $scope.name = name;
         $scope.items = items;
+        var self = this;
 
         $scope.recordActions = {
             add: {
                 displayName: 'Add',
                 icon: 'plus',
                 fn: function (rc) {
-                    ctrl.editRecord(rc);
+                    currentItems.post(rc);
                 },
                 show: function () {
-                    return !ctrl.readOnly;
+                    return !self.readOnly;
                 }
             }
         };
@@ -619,8 +620,7 @@
             var parentSvc = RestAngular.one(parent, scope.refId).all(name);
 
             this.showList = function () {
-                var modal = modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);
-                //modal.result.then(function (data) {});
+                modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);
             };
 
             var self = this;

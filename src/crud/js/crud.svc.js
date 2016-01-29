@@ -302,8 +302,7 @@
             var parentSvc = RestAngular.one(parent, scope.refId).all(name);
 
             this.showList = function () {
-                var modal = modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);
-                //modal.result.then(function (data) {});
+                modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);
             };
 
             var self = this;
