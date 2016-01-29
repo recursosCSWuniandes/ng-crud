@@ -26,7 +26,8 @@
         };
     }]);
 
-    mod.controller('modalCtrl', ['$scope', '$modalInstance', 'items', 'name', 'currentItems', function ($scope, $modalInstance, items, name, currentItems) {
+    mod.controller('modalCtrl', ['$scope', '$modalInstance', 'items', 'name', 'currentItems',
+        function ($scope, $modalInstance, items, name, currentItems) {
         $scope.fields = [{name: 'name', displayName: 'Name', type: 'String'}];
         $scope.name = name;
         $scope.items = items;

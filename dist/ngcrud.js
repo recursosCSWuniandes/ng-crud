@@ -173,7 +173,8 @@
         };
     }]);
 
-    mod.controller('modalCtrl', ['$scope', '$modalInstance', 'items', 'name', 'currentItems', function ($scope, $modalInstance, items, name, currentItems) {
+    mod.controller('modalCtrl', ['$scope', '$modalInstance', 'items', 'name', 'currentItems',
+        function ($scope, $modalInstance, items, name, currentItems) {
         $scope.fields = [{name: 'name', displayName: 'Name', type: 'String'}];
         $scope.name = name;
         $scope.items = items;
@@ -620,7 +621,7 @@
             var parentSvc = RestAngular.one(parent, scope.refId).all(name);
 
             this.showList = function () {
-                modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);
+                modalService.createSelectionModal(scope.displayName, svc.getList(), parentSvc.getList());
             };
 
             var self = this;
@@ -632,12 +633,10 @@
                 });
             };
 
+            this.fetchRecords();
+
             this.deleteRecord = function(rc){
                 return rc.remove().then(this.fetchRecords);
-            };
-
-            this.addRecord = function(rc){
-                return scope.records.post(rc).then(this.fetchRecords);
             };
 
             this.globalActions = [{

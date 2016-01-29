@@ -302,7 +302,7 @@
             var parentSvc = RestAngular.one(parent, scope.refId).all(name);
 
             this.showList = function () {
-                modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);
+                modalService.createSelectionModal(scope.displayName, svc.getList(), parentSvc.getList());
             };
 
             var self = this;
@@ -314,12 +314,10 @@
                 });
             };
 
+            this.fetchRecords();
+
             this.deleteRecord = function(rc){
                 return rc.remove().then(this.fetchRecords);
-            };
-
-            this.addRecord = function(rc){
-                return scope.records.post(rc).then(this.fetchRecords);
             };
 
             this.globalActions = [{
