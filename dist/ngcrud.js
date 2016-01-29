@@ -678,7 +678,7 @@
         };
         this.extendCompChildCtrl = function (options) {
             compositeRelCtrl.call(options.ctrl, options.scope, options.model, options.name, options.displayName,
-                options.parentUrl);
+                options.parent);
         };
         this.extendAggChildCtrl = function (options) {
             aggregateRelCtrl.call(options.ctrl, options.scope, options.model, options.name,
