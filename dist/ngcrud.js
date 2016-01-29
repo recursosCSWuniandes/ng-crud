@@ -549,24 +549,17 @@
         }
 
         function commonChildCtrl(scope, model, name, displayName) {
+            var parentRecord = scope.currentRecord;
+
             extendCommonCtrl.call(this, scope, {fields: model.fields}, name, displayName);
 
-            //Escucha de evento cuando se selecciona un registro maestro
-            var self = this;
-
-            function onCreateOrEdit(event, args) {
-                if (args[name] === undefined) {
-                    args[name] = [];
+            if(parentRecord){
+                if (parentRecord[name] === undefined) {
+                    parentRecord[name] = [];
                 }
-                scope.records = args[name];
-                scope.refId = args.id;
-                if (self.fetchRecords) {
-                    self.fetchRecords();
-                }
+                scope.records = parentRecord[name];
+                scope.refId = parentRecord.id;
             }
-
-            scope.$on('post-create', onCreateOrEdit);
-            scope.$on('post-edit', onCreateOrEdit);
         }
 
         function compositeRelCtrl(scope, model, name, displayName, parent) {
