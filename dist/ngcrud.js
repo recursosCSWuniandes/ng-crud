@@ -189,7 +189,7 @@
                     currentItems.customPOST(rc, rc.id);
                 },
                 show: function (rc) {
-                    return !self.readOnly && rc.selected;
+                    return !self.readOnly && !rc.selected;
                 }
             }
         };
