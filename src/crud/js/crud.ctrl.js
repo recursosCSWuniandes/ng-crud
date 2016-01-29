@@ -40,8 +40,8 @@
                 fn: function (rc) {
                     currentItems.post(rc);
                 },
-                show: function () {
-                    return !self.readOnly;
+                show: function (rc) {
+                    return !self.readOnly && rc.selected;
                 }
             }
         };

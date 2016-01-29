@@ -187,8 +187,8 @@
                 fn: function (rc) {
                     currentItems.post(rc);
                 },
-                show: function () {
-                    return !self.readOnly;
+                show: function (rc) {
+                    return !self.readOnly && rc.selected;
                 }
             }
         };
@@ -461,6 +461,7 @@
             //Código para cargar los valores de las referencias
             this.loadRefOptions = function () {
                 var self = this;
+
                 function loadFieldOptions(field) {
                     var url = $injector.get(field.url);
                     RestAngular.all(url).getList().then(function (data) {
@@ -468,7 +469,7 @@
                         if (!field.required) {
                             field.options.unshift(null);
                         }
-                    }, function(response){
+                    }, function (response) {
                         self.showError(response.data);
                     });
                 }
@@ -555,7 +556,7 @@
 
             extendCommonCtrl.call(this, scope, {fields: model.fields}, name, displayName);
 
-            if(parentRecord){
+            if (parentRecord) {
                 if (parentRecord[name] === undefined) {
                     parentRecord[name] = [];
                 }
@@ -620,23 +621,26 @@
 
             var parentSvc = RestAngular.one(parent, scope.refId).all(name);
 
-            this.showList = function () {
-                modalService.createSelectionModal(scope.displayName, svc.getList(), parentSvc.getList());
-            };
+            scope.records = parentSvc.getList().$object;
 
             var self = this;
 
-            this.fetchRecords = function(){
-                return parentSvc.getList().then(function(data){
+            this.fetchRecords = function () {
+                return parentSvc.getList().then(function (data) {
                     scope.records = data;
                     return data;
                 });
             };
 
-            this.fetchRecords();
-
-            this.deleteRecord = function(rc){
+            this.deleteRecord = function (rc) {
                 return rc.remove().then(this.fetchRecords);
+            };
+
+            this.showList = function () {
+                var modal = modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);
+                modal.result.then(function (data) {
+
+                });
             };
 
             this.globalActions = [{
@@ -647,7 +651,7 @@
                     self.showList();
                 },
                 show: function () {
-                    return !self.editMode;
+                    return !self.editMode && scope.records;
                 }
             }];
 
