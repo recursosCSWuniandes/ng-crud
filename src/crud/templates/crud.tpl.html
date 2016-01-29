@@ -35,7 +35,7 @@
             </li>
         </ul>
         <div ng-repeat="child in model.childs"
-             ng-if="tab === child.name">
+             ng-if="tab === child.name && (child.owned || currentRecord.id)">
             <div child-controller></div>
         </div>
     </div>
