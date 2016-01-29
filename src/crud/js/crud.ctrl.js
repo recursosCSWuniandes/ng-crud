@@ -57,7 +57,7 @@
             });
         }
 
-        loadSelected(items, currentItems);
+        loadSelected($scope.items, currentItems);
 
         function getSelectedItems() {
             return $scope.items.filter(function (item) {
