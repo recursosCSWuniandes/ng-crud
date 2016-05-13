@@ -56,7 +56,6 @@
     mod.directive('crudForm', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
-                name: '=',
                 fields: '=*',
                 record: '='
             },

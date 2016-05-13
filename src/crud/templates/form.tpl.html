@@ -1,19 +1,15 @@
-<form novalidate name="form" id="{{name}}-form" role="form">
-    <fieldset>
-        <input id="id" class="form-control" type="hidden" ng-model="record.id"/>
-        <div class="form-group col-md-12" ng-repeat="column in fields" ng-switch="column.type" ng-class="{'has-success': form[column.name].$valid && form[column.name].$dirty, 'has-error': form[column.name].$invalid && form[column.name].$dirty}" >
-            <label for="{{column.name}}" class="col-md-2 control-label">{{column.displayName}}</label>
-            <div class="col-md-10">
-                <input ng-switch-when="String" id="{{column.name}}" name="{{column.name}}" class="form-control" type="text" ng-model="record[column.name]" ng-required="column.required" />
-                <input ng-switch-when="Currency" id="{{column.name}}" name="{{column.name}}" class="form-control" type="number" ng-model="record[column.name]" ng-required="column.required" />
-                <input ng-switch-when="Integer" id="{{column.name}}" name="{{column.name}}" class="form-control" type="number" ng-model="record[column.name]" ng-required="column.required" />
-                <input ng-switch-when="Long" id="{{column.name}}" name="{{column.name}}" class="form-control" type="number" ng-model="record[column.name]" ng-required="column.required" />
-                <input ng-switch-when="Boolean" id="{{column.name}}" name="{{column.name}}" ng-checked="record[column.name]" type="checkbox" ng-model="record[column.name]" ng-required="column.required && record[column.name].$isEmpty" />
-                <input ng-switch-when="Computed" id="{{column.name}}" name="{{column.name}}" class="form-control" type="text" ng-value="column.fn(record)" readonly />
-                <input ng-switch-when="Image" id="{{column.name}}" name="{{column.name}}" class="form-control" type="url" ng-model="record[column.name]" ng-required="column.required"/>
-                <select ng-switch-when="Reference" id="{{column.name}}" name="{{column.name}}" class="form-control" ng-options="rc.name for rc in column.options track by rc.id" ng-model="record[column.name]"></select>
-                <date-picker ng-switch-when="Date" value="record[column.name]" model="column"></date-picker>
-            </div>
-        </div>
-    </fieldset>
-</form>
+<input id="id" class="form-control" type="hidden" ng-model="record.id"/>
+<div class="form-group col-md-12" ng-repeat="(fieldName, field) in fields" ng-switch="field.type" ng-class="{'has-success': form[fieldName].$valid && form[fieldName].$dirty, 'has-error': form[fieldName].$invalid && form[fieldName].$dirty}" >
+    <label for="{{fieldName}}" class="col-md-2 control-label">{{field.displayName}}</label>
+    <div class="col-md-10">
+        <input ng-switch-when="String" id="{{fieldName}}" name="{{fieldName}}" class="form-control" type="text" ng-model="record[fieldName]" ng-required="field.required" />
+        <input ng-switch-when="Currency" id="{{fieldName}}" name="{{fieldName}}" class="form-control" type="number" ng-model="record[fieldName]" ng-required="field.required" />
+        <input ng-switch-when="Integer" id="{{fieldName}}" name="{{fieldName}}" class="form-control" type="number" ng-model="record[fieldName]" ng-required="field.required" />
+        <input ng-switch-when="Long" id="{{fieldName}}" name="{{fieldName}}" class="form-control" type="number" ng-model="record[fieldName]" ng-required="field.required" />
+        <input ng-switch-when="Boolean" id="{{fieldName}}" name="{{fieldName}}" ng-checked="record[fieldName]" type="checkbox" ng-model="record[fieldName]" ng-required="field.required && record[fieldName].$isEmpty" />
+        <input ng-switch-when="Computed" id="{{fieldName}}" name="{{fieldName}}" class="form-control" type="text" ng-value="field.fn(record)" readonly />
+        <input ng-switch-when="Image" id="{{fieldName}}" name="{{fieldName}}" class="form-control" type="url" ng-model="record[fieldName]" ng-required="field.required"/>
+        <select ng-switch-when="Reference" id="{{fieldName}}" name="{{fieldName}}" class="form-control" ng-options="rc.name for rc in field.options track by rc.id" ng-model="record[fieldName]"></select>
+        <date-picker ng-switch-when="Date" value="record[fieldName]" model="field"></date-picker>
+    </div>
+</div>

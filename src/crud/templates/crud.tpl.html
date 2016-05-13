@@ -23,7 +23,11 @@
 </div>
 <div ng-if="ctrl.editMode">
     <div class="well">
-        <crud-form name="name" fields="model.fields" record="currentRecord"></crud-form>
+        <form name="{{name}}">
+            <fieldset>
+                <crud-form fields="model.fields" record="currentRecord"></crud-form>
+            </fieldset>
+        </form>
     </div>
     <div id="childs" ng-if="model.childs">
         <ul class="nav nav-tabs">
