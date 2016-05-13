@@ -2,12 +2,12 @@
     <div ng-repeat="record in records">
         <div class="col-md-4 col-sm-6 col-lg-3 well">
             <div class="col-md-12">
-                <div class="img-thumbnail" ng-class="{'col-sm-4': !$first}" ng-repeat="column in fields| filter: {type: 'Image'}" id="{{$parent.$index}}-{{column.name}}" ng-if="record[column.name]">
+                <div class="img-thumbnail" ng-class="{'col-sm-4': !$first}" ng-repeat="(key, column) in fields| filter: {type: 'Image'}" id="{{$parent.$index}}-{{column.name}}" ng-if="record[column.name]">
                     <a ng-href="{{record[column.name]}}" target="_blank"><img class="img-responsive" style="height: 20vmax;" ng-src="{{record[column.name]}}" alt="{{record[column.name]}}"></a>
                 </div>
             </div>
             <div class="caption" >
-                <div ng-repeat="column in fields| filter: {type: '!Image'}" ng-switch="column.type" id="{{$parent.$index}}-{{column.name}}">
+                <div ng-repeat="(key, column) in fields| filter: {type: '!Image'}" ng-switch="column.type" id="{{$parent.$index}}-{{column.name}}">
                     <p ng-switch-when="Computed"><strong>{{column.displayName}}:</strong> {{column.fn(record)}}</p>
                     <p ng-switch-when="Date"><strong>{{column.displayName}}:</strong> {{record[column.name]| date}}</p>
                     <p ng-switch-when="Reference"><strong>{{column.displayName}}:</strong> {{record[column.name].name}}</p>
