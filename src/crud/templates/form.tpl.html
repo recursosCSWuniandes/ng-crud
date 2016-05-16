@@ -9,7 +9,7 @@
         <input ng-switch-when="Boolean" id="{{fieldName}}" name="{{fieldName}}" ng-checked="record[fieldName]" type="checkbox" ng-model="record[fieldName]" ng-required="field.required && record[fieldName].$isEmpty" />
         <input ng-switch-when="Computed" id="{{fieldName}}" name="{{fieldName}}" class="form-control" type="text" ng-value="field.fn(record)" readonly />
         <input ng-switch-when="Image" id="{{fieldName}}" name="{{fieldName}}" class="form-control" type="url" ng-model="record[fieldName]" ng-required="field.required"/>
-        <select ng-switch-when="Reference" id="{{fieldName}}" name="{{fieldName}}" class="form-control" ng-options="rc.name for rc in field.options track by rc.id" ng-model="record[fieldName]"></select>
+        <select ng-switch-when="Reference" id="{{fieldName}}" name="{{fieldName}}" class="form-control" ng-options="rc.name for rc in listsOfValues[fieldName] track by rc.id" ng-model="record[fieldName]"></select>
         <date-picker ng-switch-when="Date" value="record[fieldName]" model="field"></date-picker>
     </div>
 </div>

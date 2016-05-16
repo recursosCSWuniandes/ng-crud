@@ -57,7 +57,8 @@
         return {
             scope: {
                 fields: '=*',
-                record: '='
+                record: '=',
+                listsOfValues: '=*?'
             },
             restrict: 'E',
             templateUrl: tplDir + 'form.tpl.html'
