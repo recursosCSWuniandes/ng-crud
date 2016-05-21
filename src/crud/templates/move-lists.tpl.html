@@ -1,0 +1,20 @@
+<div class="col-md-12">
+    <div class="col-md-5">
+        <fieldset>
+            <legend>Selected</legend>
+            <select class="form-control" multiple ng-options="rc.name for rc in selected track by rc.id" ng-model="selectedMarked"></select>
+        </fieldset>
+    </div>
+    <div class="col-md-2">
+        <button class="form-control btn btn-default" ng-click="$ctrl.removeAll()">&gt;&gt;</button>
+        <button class="form-control btn btn-default" ng-click="$ctrl.removeSome()">&gt;</button>
+        <button class="form-control btn btn-default" ng-click="$ctrl.addSome()">&lt;</button>
+        <button class="form-control btn btn-default" ng-click="$ctrl.addAll()">&lt;&lt;</button>
+    </div>
+    <div class="col-md-5">
+        <fieldset>
+            <legend>Available</legend>
+            <select class="form-control" multiple ng-options="rc.name for rc in available track by rc.id" ng-model="availableMarked"></select>
+        </fieldset>
+    </div>
+</div>

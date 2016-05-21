@@ -1,31 +1,6 @@
 (function (ng) {
     var mod = ng.module('ngCrud');
 
-    mod.controller('listCtrl', ['$scope', function ($scope) {
-        $scope.checkAll = function () {
-            this.records.forEach(function (item) {
-                item.selected = !item.selected;
-            });
-        };
-    }]);
-
-    mod.controller('datePickerCtrl', ['$scope', function ($scope) {
-        $scope.today = function () {
-            $scope.value = new Date();
-        };
-
-        $scope.clear = function () {
-            $scope.value = null;
-        };
-
-        $scope.open = function ($event) {
-            $event.preventDefault();
-            $event.stopPropagation();
-
-            $scope.opened = true;
-        };
-    }]);
-
     mod.controller('modalCtrl', ['$scope', '$modalInstance', 'items', 'name', 'currentItems',
         function ($scope, $modalInstance, items, name, currentItems) {
         $scope.fields = [{name: 'name', displayName: 'Name', type: 'String'}];

@@ -24,7 +24,13 @@
             },
             restrict: 'E',
             templateUrl: tplDir + 'list.tpl.html',
-            controller: 'listCtrl'
+            controller: ['$scope', function ($scope) {
+                $scope.checkAll = function () {
+                    this.records.forEach(function (item) {
+                        item.selected = !item.selected;
+                    });
+                };
+            }]
         };
     }]);
 
@@ -73,7 +79,22 @@
             },
             restrict: 'E',
             templateUrl: tplDir + 'datepicker.tpl.html',
-            controller: 'datePickerCtrl'
+            controller: ['$scope', function ($scope) {
+                $scope.today = function () {
+                    $scope.value = new Date();
+                };
+
+                $scope.clear = function () {
+                    $scope.value = null;
+                };
+
+                $scope.open = function ($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+
+                    $scope.opened = true;
+                };
+            }]
         };
     }]);
 
@@ -86,10 +107,69 @@
                 elem.removeAttr('child-controller');
                 if (scope.child && scope.child.ctrl) {
                     elem.attr('ng-controller', scope.child.ctrl + " as " + alias);
-                    elem.attr('ng-include', scope.child.template?'child.template':'ctrl.tpl');
+                    elem.attr('ng-include', scope.child.template ? 'child.template' : 'ctrl.tpl');
                     $compile(elem)(scope);
                 }
             }
+        };
+    }]);
+
+    mod.directive('moveLists', ['CrudTemplatesDir', function (tplDir) {
+        return {
+            scope: {
+                selected: '=*',
+                available: '=*'
+            },
+            restrict: 'E',
+            templateUrl: tplDir + 'move-lists.tpl.html',
+            controllerAs: '$ctrl',
+            controller: ['$scope', function ($scope) {
+                function move(src, dst, marked) {
+                    // If selected is undefined, all records from src are moved to dst
+                    if (!!marked) {
+                        for (var i = 0; i < marked.length; i++) {
+                            if (marked.hasOwnProperty(i)) {
+                                var index = null;
+                                for (var j = 0; j < src.length; j++) {
+                                    if (src.hasOwnProperty(j)) {
+                                        if (src[j].id === marked[i].id) {
+                                            index = j;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (index !== null) {
+                                    dst.push(src.splice(index, 1)[0]);
+                                }
+                            }
+                        }
+                    } else {
+                        dst.push.apply(dst, src);
+                        src.splice(0, src.length);
+                    }
+                }
+
+                move($scope.available, [], $scope.selected);
+                $scope.selectedMarked = [];
+                $scope.availableMarked = [];
+
+                this.addSome = function () {
+                    move($scope.available, $scope.selected, $scope.availableMarked);
+                    $scope.availableMarked = [];
+                };
+                this.addAll = function () {
+                    move($scope.available, $scope.selected);
+                    $scope.availableMarked = [];
+                };
+                this.removeSome = function () {
+                    move($scope.selected, $scope.available, $scope.selectedMarked);
+                    $scope.selectedMarked = [];
+                };
+                this.removeAll = function () {
+                    move($scope.selected, $scope.available);
+                    $scope.selectedMarked = [];
+                };
+            }]
         };
     }]);
 })(window.angular);

@@ -1,28 +1,8 @@
 (function (ng) {
     var mod = ng.module('ngCrud', ['restangular', 'ui.bootstrap']);
 
-    var tplDir = 'src/crud/templates/';
+    mod.constant('CrudTemplatesDir', 'src/crud/templates/');
 
-    mod.constant('CrudTemplatesDir', tplDir);
-
-    mod.constant('CrudTemplateURL', tplDir + 'crud.tpl.html');
-
-    mod.constant('CrudCtrlAlias', 'ctrl');
-
-    mod.config(['RestangularProvider', function (rp) {
-            rp.addRequestInterceptor(function (data, operation) {
-                if (operation === "remove") {
-                    return null;
-                }
-                return data;
-            });
-            rp.addResponseInterceptor(function (data, operation, what, url, response) {
-                if (operation === "getList" && response.headers("X-Total-Count")) {
-                    data.totalRecords = parseInt(response.headers("X-Total-Count"));
-                }
-                return data;
-            });
-        }]);
 })(window.angular);
 
 (function (ng) {
@@ -148,31 +128,6 @@
 (function (ng) {
     var mod = ng.module('ngCrud');
 
-    mod.controller('listCtrl', ['$scope', function ($scope) {
-        $scope.checkAll = function () {
-            this.records.forEach(function (item) {
-                item.selected = !item.selected;
-            });
-        };
-    }]);
-
-    mod.controller('datePickerCtrl', ['$scope', function ($scope) {
-        $scope.today = function () {
-            $scope.value = new Date();
-        };
-
-        $scope.clear = function () {
-            $scope.value = null;
-        };
-
-        $scope.open = function ($event) {
-            $event.preventDefault();
-            $event.stopPropagation();
-
-            $scope.opened = true;
-        };
-    }]);
-
     mod.controller('modalCtrl', ['$scope', '$modalInstance', 'items', 'name', 'currentItems',
         function ($scope, $modalInstance, items, name, currentItems) {
         $scope.fields = [{name: 'name', displayName: 'Name', type: 'String'}];
@@ -248,7 +203,13 @@
             },
             restrict: 'E',
             templateUrl: tplDir + 'list.tpl.html',
-            controller: 'listCtrl'
+            controller: ['$scope', function ($scope) {
+                $scope.checkAll = function () {
+                    this.records.forEach(function (item) {
+                        item.selected = !item.selected;
+                    });
+                };
+            }]
         };
     }]);
 
@@ -297,7 +258,22 @@
             },
             restrict: 'E',
             templateUrl: tplDir + 'datepicker.tpl.html',
-            controller: 'datePickerCtrl'
+            controller: ['$scope', function ($scope) {
+                $scope.today = function () {
+                    $scope.value = new Date();
+                };
+
+                $scope.clear = function () {
+                    $scope.value = null;
+                };
+
+                $scope.open = function ($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+
+                    $scope.opened = true;
+                };
+            }]
         };
     }]);
 
@@ -310,10 +286,69 @@
                 elem.removeAttr('child-controller');
                 if (scope.child && scope.child.ctrl) {
                     elem.attr('ng-controller', scope.child.ctrl + " as " + alias);
-                    elem.attr('ng-include', scope.child.template?'child.template':'ctrl.tpl');
+                    elem.attr('ng-include', scope.child.template ? 'child.template' : 'ctrl.tpl');
                     $compile(elem)(scope);
                 }
             }
+        };
+    }]);
+
+    mod.directive('moveLists', ['CrudTemplatesDir', function (tplDir) {
+        return {
+            scope: {
+                selected: '=*',
+                available: '=*'
+            },
+            restrict: 'E',
+            templateUrl: tplDir + 'move-lists.tpl.html',
+            controllerAs: '$ctrl',
+            controller: ['$scope', function ($scope) {
+                function move(src, dst, marked) {
+                    // If selected is undefined, all records from src are moved to dst
+                    if (!!marked) {
+                        for (var i = 0; i < marked.length; i++) {
+                            if (marked.hasOwnProperty(i)) {
+                                var index = null;
+                                for (var j = 0; j < src.length; j++) {
+                                    if (src.hasOwnProperty(j)) {
+                                        if (src[j].id === marked[i].id) {
+                                            index = j;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (index !== null) {
+                                    dst.push(src.splice(index, 1)[0]);
+                                }
+                            }
+                        }
+                    } else {
+                        dst.push.apply(dst, src);
+                        src.splice(0, src.length);
+                    }
+                }
+
+                move($scope.available, [], $scope.selected);
+                $scope.selectedMarked = [];
+                $scope.availableMarked = [];
+
+                this.addSome = function () {
+                    move($scope.available, $scope.selected, $scope.availableMarked);
+                    $scope.availableMarked = [];
+                };
+                this.addAll = function () {
+                    move($scope.available, $scope.selected);
+                    $scope.availableMarked = [];
+                };
+                this.removeSome = function () {
+                    move($scope.selected, $scope.available, $scope.selectedMarked);
+                    $scope.selectedMarked = [];
+                };
+                this.removeAll = function () {
+                    move($scope.selected, $scope.available);
+                    $scope.selectedMarked = [];
+                };
+            }]
         };
     }]);
 })(window.angular);
@@ -737,6 +772,11 @@ angular.module('ngCrud').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('src/crud/templates/modal.tpl.html',
     "<div class=\"modal-header\"><h3 class=\"modal-title\">{{name}}</h3></div><div class=\"modal-body\"><list-records fields=\"fields\" records=\"items\" actions=\"recordActions\"></list-records></div><div class=\"modal-footer\"><button class=\"btn btn-default btn-sm\" ng-click=\"ok()\"><span class=\"glyphicon glyphicon-ok\"></span> OK</button> <button class=\"btn btn-default btn-sm\" ng-click=\"cancel()\"><span class=\"glyphicon glyphicon-remove\"></span> Cancel</button></div>"
+  );
+
+
+  $templateCache.put('src/crud/templates/move-lists.tpl.html',
+    "<div class=\"col-md-12\"><div class=\"col-md-5\"><fieldset><legend>Selected</legend><select class=\"form-control\" multiple ng-options=\"rc.name for rc in selected track by rc.id\" ng-model=\"selectedMarked\"></select></fieldset></div><div class=\"col-md-2\"><button class=\"form-control btn btn-default\" ng-click=\"$ctrl.removeAll()\">&gt;&gt;</button> <button class=\"form-control btn btn-default\" ng-click=\"$ctrl.removeSome()\">&gt;</button> <button class=\"form-control btn btn-default\" ng-click=\"$ctrl.addSome()\">&lt;</button> <button class=\"form-control btn btn-default\" ng-click=\"$ctrl.addAll()\">&lt;&lt;</button></div><div class=\"col-md-5\"><fieldset><legend>Available</legend><select class=\"form-control\" multiple ng-options=\"rc.name for rc in available track by rc.id\" ng-model=\"availableMarked\"></select></fieldset></div></div>"
   );
 
 
