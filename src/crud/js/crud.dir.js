@@ -66,8 +66,12 @@
                 record: '=',
                 listsOfValues: '=*?'
             },
+            require: ['^^form'],
             restrict: 'E',
-            templateUrl: tplDir + 'form.tpl.html'
+            templateUrl: tplDir + 'form.tpl.html',
+            link: function(scope, elem, attr, controllers){
+                scope.form = controllers[0];
+            }
         };
     }]);
 
