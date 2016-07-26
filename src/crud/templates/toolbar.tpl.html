@@ -15,7 +15,7 @@
         <div class="collapse navbar-collapse" id="{{name}}-navbar">
             <button ng-repeat="(key, action) in actions" id="{{key}}-{{name}}"
                     ng-hide="action.show && !action.show()"
-                    class="btn btn-default navbar-btn"
+                    ng-class="action.class || 'btn btn-default navbar-btn'"
                     ng-click="action.fn()">
                 <span class="glyphicon glyphicon-{{action.icon}}"></span> {{action.displayName}}
             </button>
