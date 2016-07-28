@@ -102,22 +102,30 @@
         };
     }]);
 
-    mod.directive('childController', ['$compile', 'CrudCtrlAlias', function ($compile, alias) {
-        return {
-            restrict: 'A',
-            terminal: true,
-            priority: 100000,
-            link: function (scope, elem) {
-                elem.removeAttr('child-controller');
-                if (scope.child && scope.child.ctrl) {
-                    elem.attr('ng-controller', scope.child.ctrl + " as " + alias);
-                    elem.attr('ng-include', scope.child.template ? 'child.template' : 'ctrl.tpl');
-                    $compile(elem)(scope);
-                }
-            }
-        };
-    }]);
-
+    /**
+     * @ngdoc directive
+     * @name moveLists
+     * @scope
+     * @priority 0
+     * @restrict E
+     * @param {array} selected
+     * 
+     * list of selected items
+     * 
+     * @param {array} available
+     * 
+     * list of available items
+     * 
+     * @description
+     * 
+     * Creates a view to swap items between two lists
+     * 
+     * @example
+     * 
+     * <pre>
+     *     <move-lists selected="selectedItems" available="availableItems"></move-lists>
+     * </pre>
+     */
     mod.directive('moveLists', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
