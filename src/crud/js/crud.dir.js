@@ -1,6 +1,19 @@
 (function (ng) {
     var mod = ng.module('ngCrud');
-
+    /**
+     * @ngdoc directive
+     * @name ngCrud.directive:searchBar
+     * @priority 0
+     * @restrict E
+     * @scope
+     * 
+     * @param {expression} name name to show in toolbar
+     * @param {object} fields definition of the search fields
+     * @param {expression} record object to which the result is mapped
+     * @param {function} submitFn function to execute when submitting
+     * 
+     * @description Creates a search form
+     */
     mod.directive('searchBar', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
@@ -14,6 +27,23 @@
         };
     }]);
 
+    /**
+     * @ngdoc directive
+     * @name ngCrud.directive:listRecords
+     * @priority 0
+     * @restrict E
+     * @scope
+     * 
+     * @param {array} records Array with records to display
+     * @param {object} fields definition of the fields
+     * @param {object} actions Actions available per record
+     * @param {boolean=} checklist Whether or not to show checkboxes
+     * 
+     * @description 
+     * 
+     * Creates a table showing the registered fields for every record in <strong>records</strong>
+     * 
+     */
     mod.directive('listRecords', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
@@ -34,6 +64,13 @@
         };
     }]);
 
+    /**
+     * @ngdoc directive
+     * @name ngCrud.directive:gallery
+     * @priority 0
+     * @restrict E
+     * @scope
+     */
     mod.directive('gallery', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
@@ -47,6 +84,13 @@
         };
     }]);
 
+    /**
+     * @ngdoc directive
+     * @name ngCrud.directive:toolbar
+     * @priority 0
+     * @restrict E
+     * @scope
+     */
     mod.directive('toolbar', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
@@ -59,6 +103,25 @@
         };
     }]);
 
+    /**
+     * @ngdoc directive
+     * @name ngCrud.directive:crudForm
+     * @scope
+     * @priority 0
+     * @restrict E
+     * @param {object} fields description of fields
+     * @param {object} record object in which values will be set
+     * @param {object} listOfValues key/value objects where key is an attribute name and values are lists of values
+     * 
+     * @description
+     * 
+     * creates form inputs based on a fields description
+     * 
+     * @example
+     * <pre>
+     * <crud-form fields="fields" record="myRecord" lists-of-values="lovs"></crud-form>
+     * </pre>
+     */
     mod.directive('crudForm', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
@@ -75,6 +138,23 @@
         };
     }]);
 
+    /**
+     * @ngdoc directive
+     * @name ngCrud.directive:datePicker
+     * @scope
+     * @priority 0
+     * @restrict E
+     * @param {object} model {@link ngCrud.model} of the field
+     * @description
+     * 
+     * Creates a text input field with a calendar pop-up
+     * 
+     * @example
+     * 
+     * <pre>
+     * <date-picker value="person.birthdate" model="birthdateModel"></date-picker>
+     * </pre>
+     */
     mod.directive('datePicker', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
@@ -104,24 +184,19 @@
 
     /**
      * @ngdoc directive
-     * @name moveLists
+     * @name ngCrud.directive:moveLists
      * @scope
      * @priority 0
      * @restrict E
-     * @param {array} selected
      * 
-     * list of selected items
-     * 
-     * @param {array} available
-     * 
-     * list of available items
+     * @param {array} selected list of selected items
+     * @param {array} available list of available items
      * 
      * @description
      * 
      * Creates a view to swap items between two lists
      * 
      * @example
-     * 
      * <pre>
      *     <move-lists selected="selectedItems" available="availableItems"></move-lists>
      * </pre>

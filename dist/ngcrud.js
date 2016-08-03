@@ -1,3 +1,88 @@
+/**
+ * @ngdoc object
+ * @name ngCrud.FieldType
+ * @description
+ * 
+ * Defines the configuration for an object attribute
+ * 
+ * @example
+ * <pre>
+ * {
+ *     displayName: 'String' //Name to display in forms or lists,
+ *     type: '', //Type of the field
+ *     required: false //Whether the field es required or not
+ * }
+ * </pre>
+ */
+
+/**
+ * @ngdoc property
+ * @name ngCrud.FieldType#type
+ * @propertyOf ngCrud.FieldType
+ * @returns {string} Name for field's type
+ * 
+ * @description Defines the type of the field. Currently the valid types are:
+ * <ul>
+ * <li>String</li>
+ * <li>Image</li>
+ * <li>Boolean</li>
+ * <li>Reference</li>
+ * <li>Date</li>
+ * <li>Currency</li>
+ * <li>Computed</li>
+ * <li>Long</li>
+ * <li>Number</li>
+ * <li>Integer</li>
+ * </ul>
+ */
+
+/**
+ * @ngdoc property
+ * @name ngCrud.FieldType#displayName
+ * @propertyOf ngCrud.FieldType
+ * @returns {string} Display name for the field
+ * 
+ * @description Defines the text to show on labels
+ */
+
+/**
+ * @ngdoc property
+ * @name ngCrud.FieldType#required
+ * @propertyOf ngCrud.FieldType
+ * @returns {boolean} Whether or not the field is required
+ * 
+ * @description Sets the field as required
+ */
+
+/**
+ * @ngdoc overview
+ * 
+ * @name ngCrud
+ * 
+ * @description
+ * 
+ * Set of directives to handle specific model definition
+ * 
+ */
+
+/**
+ * @ngdoc object
+ * @name ngCrud.ActionType
+ * @description
+ * 
+ * Defines the configuration for an action
+ * 
+ * @example
+ * <pre>
+ * refresh: {
+ *    displayName: 'Refresh',
+ *    icon: 'refresh',
+ *    fn: function (record) {},
+ *    show: function(record){}
+ * }
+ * </pre>
+ */
+
 (function (ng) {
     var mod = ng.module('ngCrud', ['restangular', 'ui.bootstrap']);
 
@@ -127,59 +212,20 @@
 
 (function (ng) {
     var mod = ng.module('ngCrud');
-
-    mod.controller('modalCtrl', ['$scope', '$modalInstance', 'items', 'name', 'currentItems',
-        function ($scope, $modalInstance, items, name, currentItems) {
-        $scope.fields = [{name: 'name', displayName: 'Name', type: 'String'}];
-        $scope.name = name;
-        $scope.items = items.plain();
-        var self = this;
-
-        $scope.recordActions = {
-            add: {
-                displayName: 'Add',
-                icon: 'plus',
-                fn: function (rc) {
-                    rc.selected = true;
-                    currentItems.customPOST(rc, rc.id);
-                },
-                show: function (rc) {
-                    return !self.readOnly && !rc.selected;
-                }
-            }
-        };
-
-        function loadSelected(list, selected) {
-            ng.forEach(selected, function (selectedValue) {
-                ng.forEach(list, function (listValue) {
-                    if (listValue.id === selectedValue.id) {
-                        listValue.selected = true;
-                    }
-                });
-            });
-        }
-
-        loadSelected($scope.items, currentItems);
-
-        function getSelectedItems() {
-            return $scope.items.filter(function (item) {
-                return !!item.selected;
-            });
-        }
-
-        $scope.ok = function () {
-            $modalInstance.close(getSelectedItems());
-        };
-
-        $scope.cancel = function () {
-            $modalInstance.dismiss('cancel');
-        };
-    }]);
-})(window.angular);
-
-(function (ng) {
-    var mod = ng.module('ngCrud');
-
+    /**
+     * @ngdoc directive
+     * @name ngCrud.directive:searchBar
+     * @priority 0
+     * @restrict E
+     * @scope
+     * 
+     * @param {expression} name name to show in toolbar
+     * @param {object} fields definition of the search fields
+     * @param {expression} record object to which the result is mapped
+     * @param {function} submitFn function to execute when submitting
+     * 
+     * @description Creates a search form
+     */
     mod.directive('searchBar', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
@@ -193,6 +239,23 @@
         };
     }]);
 
+    /**
+     * @ngdoc directive
+     * @name ngCrud.directive:listRecords
+     * @priority 0
+     * @restrict E
+     * @scope
+     * 
+     * @param {array} records Array with records to display
+     * @param {object} fields definition of the fields
+     * @param {object} actions Actions available per record
+     * @param {boolean=} checklist Whether or not to show checkboxes
+     * 
+     * @description 
+     * 
+     * Creates a table showing the registered fields for every record in <strong>records</strong>
+     * 
+     */
     mod.directive('listRecords', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
@@ -213,6 +276,13 @@
         };
     }]);
 
+    /**
+     * @ngdoc directive
+     * @name ngCrud.directive:gallery
+     * @priority 0
+     * @restrict E
+     * @scope
+     */
     mod.directive('gallery', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
@@ -226,6 +296,13 @@
         };
     }]);
 
+    /**
+     * @ngdoc directive
+     * @name ngCrud.directive:toolbar
+     * @priority 0
+     * @restrict E
+     * @scope
+     */
     mod.directive('toolbar', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
@@ -238,6 +315,25 @@
         };
     }]);
 
+    /**
+     * @ngdoc directive
+     * @name ngCrud.directive:crudForm
+     * @scope
+     * @priority 0
+     * @restrict E
+     * @param {object} fields description of fields
+     * @param {object} record object in which values will be set
+     * @param {object} listOfValues key/value objects where key is an attribute name and values are lists of values
+     * 
+     * @description
+     * 
+     * creates form inputs based on a fields description
+     * 
+     * @example
+     * <pre>
+     * <crud-form fields="fields" record="myRecord" lists-of-values="lovs"></crud-form>
+     * </pre>
+     */
     mod.directive('crudForm', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
@@ -254,6 +350,23 @@
         };
     }]);
 
+    /**
+     * @ngdoc directive
+     * @name ngCrud.directive:datePicker
+     * @scope
+     * @priority 0
+     * @restrict E
+     * @param {object} model {@link ngCrud.model} of the field
+     * @description
+     * 
+     * Creates a text input field with a calendar pop-up
+     * 
+     * @example
+     * 
+     * <pre>
+     * <date-picker value="person.birthdate" model="birthdateModel"></date-picker>
+     * </pre>
+     */
     mod.directive('datePicker', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
@@ -281,22 +394,25 @@
         };
     }]);
 
-    mod.directive('childController', ['$compile', 'CrudCtrlAlias', function ($compile, alias) {
-        return {
-            restrict: 'A',
-            terminal: true,
-            priority: 100000,
-            link: function (scope, elem) {
-                elem.removeAttr('child-controller');
-                if (scope.child && scope.child.ctrl) {
-                    elem.attr('ng-controller', scope.child.ctrl + " as " + alias);
-                    elem.attr('ng-include', scope.child.template ? 'child.template' : 'ctrl.tpl');
-                    $compile(elem)(scope);
-                }
-            }
-        };
-    }]);
-
+    /**
+     * @ngdoc directive
+     * @name ngCrud.directive:moveLists
+     * @scope
+     * @priority 0
+     * @restrict E
+     * 
+     * @param {array} selected list of selected items
+     * @param {array} available list of available items
+     * 
+     * @description
+     * 
+     * Creates a view to swap items between two lists
+     * 
+     * @example
+     * <pre>
+     *     <move-lists selected="selectedItems" available="availableItems"></move-lists>
+     * </pre>
+     */
     mod.directive('moveLists', ['CrudTemplatesDir', function (tplDir) {
         return {
             scope: {
@@ -356,396 +472,6 @@
         };
     }]);
 })(window.angular);
-
-(function (ng, Math) {
-    var mod = ng.module('ngCrud');
-
-    function buildGlobalActions(ctrl) {
-        return {
-            create: {
-                displayName: 'Create',
-                icon: 'plus',
-                fn: function () {
-                    ctrl.createRecord();
-                },
-                show: function () {
-                    return !ctrl.readOnly && !ctrl.editMode;
-                }
-            },
-            refresh: {
-                displayName: 'Refresh',
-                icon: 'refresh',
-                fn: function () {
-                    ctrl.fetchRecords();
-                },
-                show: function () {
-                    return !ctrl.editMode;
-                }
-            },
-            save: {
-                displayName: 'Save',
-                icon: 'save',
-                fn: function () {
-                    ctrl.saveRecord();
-                },
-                show: function () {
-                    return !ctrl.readOnly && ctrl.editMode;
-                }
-            },
-            cancel: {
-                displayName: 'Cancel',
-                icon: 'remove',
-                fn: function () {
-                    ctrl.fetchRecords();
-                }
-
-                ,
-                show: function () {
-                    return !ctrl.readOnly && ctrl.editMode;
-                }
-            }
-        };
-    }
-
-    function buildRecordActions(ctrl) {
-        return {
-            edit: {
-                displayName: 'Edit',
-                icon: 'edit',
-                fn: function (rc) {
-                    ctrl.editRecord(rc);
-                },
-                show: function () {
-                    return !ctrl.readOnly;
-                }
-            },
-            delete: {
-                displayName: 'Delete',
-                icon: 'minus',
-                fn: function (rc) {
-                    ctrl.deleteRecord(rc);
-                },
-                show: function () {
-                    return !ctrl.readOnly;
-                }
-            }
-        };
-    }
-
-    mod.service('CrudCreator', ['Restangular', '$injector', 'CrudTemplateURL', 'modalService', '$location', function (RestAngular, $injector, tplUrl, modalService, $location) {
-
-        /*
-         * Función constructora para un controlador con funcionalidad genérica.
-         * Añade comportamiento para:
-         *   Manejo de alertas
-         *   Manejo de paginación
-         *   Acciones para CRUD
-         *   Carga de opciones de referencias
-         */
-        function extendCommonCtrl(scope, model, name, displayName) {
-            //Variables para el scope
-            scope.name = name;
-            scope.displayName = displayName;
-            scope.model = model;
-            scope.currentRecord = {};
-            scope.records = [];
-            scope.alerts = [];
-
-            //Paginación
-            this.maxSize = 5;
-            this.itemsPerPage = 10;
-            this.totalItems = 0;
-            this.currentPage = 1;
-            this.numPages = 0;
-
-            this.pageChanged = function () {
-                this.fetchRecords();
-            };
-
-            //Variables para el controlador
-            this.readOnly = false;
-            this.editMode = false;
-            this.tpl = tplUrl;
-            this.asGallery = false;
-
-            //Alertas
-            function showMessage(msg, type) {
-                var types = ['info', 'danger', 'warning', 'success'];
-                if (types.some(function (rc) {
-                        return type === rc;
-                    })) {
-                    scope.alerts.push({type: type, msg: msg});
-                }
-            }
-
-            this.showError = function (msg) {
-                showMessage(msg, 'danger');
-            };
-
-            this.showSuccess = function (msg) {
-                showMessage(msg, 'success');
-            };
-
-            this.showWarning = function (msg) {
-                showMessage(msg, 'warning');
-            };
-
-            this.showInfo = function (msg) {
-                showMessage(msg, 'info');
-            };
-
-            this.closeAlert = function (index) {
-                scope.alerts.splice(index, 1);
-            };
-
-            //Código para cargar los valores de las referencias
-            this.loadRefOptions = function () {
-                var self = this;
-
-                function loadFieldOptions(field) {
-                    var url = $injector.get(field.url);
-                    RestAngular.all(url).getList().then(function (data) {
-                        field.options = data.plain();
-                        if (!field.required) {
-                            field.options.unshift(null);
-                        }
-                    }, function (response) {
-                        self.showError(response.data);
-                    });
-                }
-
-                var model = scope.model.fields;
-                for (var i in model) {
-                    if (model.hasOwnProperty(i)) {
-                        var field = model[i];
-                        if (field.type === 'Reference' && !!field.url) {
-                            if ($injector.has(field.url)) {
-                                loadFieldOptions(field);
-                            }
-                        }
-                    }
-                }
-            };
-
-            //Configuración de acciones
-            this.globalActions = buildGlobalActions(this);
-            this.recordActions = buildRecordActions(this);
-        }
-
-        function extendCtrl(scope, model, url, name, displayName) {
-            extendCommonCtrl.call(this, scope, model, name, displayName);
-            var self = this;
-
-            //Funciones del controlador
-            function responseError(response) {
-                self.showError(response.data);
-            }
-
-            this.changeTab = function (tab) {
-                scope.tab = tab;
-            };
-
-            this.fetchRecords = function () {
-                var queryParams = {page: this.currentPage, maxRecords: this.itemsPerPage};
-                ng.extend(queryParams, $location.search());
-                return RestAngular.all(url).getList(queryParams).then(function (data) {
-                    scope.records = data;
-                    self.totalItems = data.totalRecords;
-                    scope.currentRecord = {};
-                    self.editMode = false;
-                    return data;
-                }, responseError);
-            };
-
-            this.createRecord = function () {
-                scope.$broadcast('pre-create', scope.currentRecord);
-                this.editMode = true;
-                scope.currentRecord = {};
-                scope.$broadcast('post-create', scope.currentRecord);
-            };
-
-            this.editRecord = function (record) {
-                scope.$broadcast('pre-edit', record);
-                return record.get().then(function (data) {
-                    scope.currentRecord = data;
-                    self.editMode = true;
-                    scope.$broadcast('post-edit', data);
-                    return data;
-                }, responseError);
-            };
-            this.saveRecord = function () {
-                var promise, record = scope.currentRecord;
-                if (record.id) {
-                    promise = record.put();
-                } else {
-                    promise = scope.records.post(record);
-                }
-                promise.then(function () {
-                    self.fetchRecords();
-                }, responseError);
-            };
-            this.deleteRecord = function (record) {
-                return record.remove().then(function () {
-                    self.fetchRecords();
-                }, responseError);
-            };
-        }
-
-        function commonChildCtrl(scope, model, name, displayName) {
-            var parentRecord = scope.currentRecord;
-
-            extendCommonCtrl.call(this, scope, {fields: model.fields}, name, displayName);
-
-            if (parentRecord) {
-                if (parentRecord[name] === undefined) {
-                    parentRecord[name] = [];
-                }
-                scope.records = parentRecord[name];
-                scope.refId = parentRecord.id;
-            }
-        }
-
-        function compositeRelCtrl(scope, model, name, displayName, parent) {
-            commonChildCtrl.call(this, scope, model, name, displayName);
-
-            scope.parent = parent;
-
-            //Función para encontrar un registro por ID o CID
-            function indexOf(rc) {
-                var field = rc.id !== undefined ? 'id' : 'cid';
-                for (var i in scope.records) {
-                    if (scope.records.hasOwnProperty(i)) {
-                        var current = scope.records[i];
-                        if (current[field] === rc[field]) {
-                            return i;
-                        }
-                    }
-                }
-            }
-
-            this.fetchRecords = function () {
-                scope.currentRecord = {};
-                this.editMode = false;
-            };
-            this.saveRecord = function () {
-                var rc = scope.currentRecord;
-                if (rc.id || rc.cid) {
-                    var idx = indexOf(rc);
-                    scope.records.splice(idx, 1, rc);
-                } else {
-                    rc.cid = -Math.floor(Math.random() * 10000);
-                    rc[scope.parent] = {id: scope.refId};
-                    scope.records.push(rc);
-                }
-                this.fetchRecords();
-            };
-            this.deleteRecord = function (record) {
-                var idx = indexOf(record);
-                scope.records.splice(idx, 1);
-            };
-            this.editRecord = function (record) {
-                scope.currentRecord = ng.copy(record);
-                this.editMode = true;
-            };
-            this.createRecord = function () {
-                this.editMode = true;
-                scope.currentRecord = {};
-            };
-        }
-
-        function aggregateRelCtrl(scope, model, name, displayName, parent, ctx) {
-            commonChildCtrl.call(this, scope, model, name, displayName);
-
-            //Servicio para obtener la lista completa de registros que se pueden seleccionar
-            var svc = RestAngular.all(ctx);
-
-            var parentSvc = RestAngular.one(parent, scope.refId).all(name);
-
-            scope.records = parentSvc.getList().$object;
-
-            var self = this;
-
-            this.fetchRecords = function () {
-                return parentSvc.getList().then(function (data) {
-                    scope.records = data;
-                    return data;
-                });
-            };
-
-            this.deleteRecord = function (rc) {
-                return rc.remove().then(this.fetchRecords);
-            };
-
-            this.showList = function () {
-                var modal = modalService.createSelectionModal(scope.displayName, svc.getList(), scope.records);
-                modal.result.then(function () {
-                    self.fetchRecords();
-                }, function(){
-                    self.fetchRecords();
-                });
-            };
-
-            this.globalActions = [{
-                name: 'select',
-                displayName: 'Select',
-                icon: 'check',
-                fn: function () {
-                    self.showList();
-                },
-                show: function () {
-                    return !self.editMode && scope.records;
-                }
-            }];
-
-            this.recordActions = {
-                delete: {
-                    displayName: 'Delete',
-                    icon: 'minus',
-                    fn: function (rc) {
-                        self.deleteRecord(rc);
-                    },
-                    show: function () {
-                        return !self.readOnly;
-                    }
-                }
-            };
-        }
-
-        this.extendController = function (options) {
-            extendCtrl.call(options.ctrl, options.scope, options.model, options.url, options.name, options.displayName);
-        };
-        this.extendCompChildCtrl = function (options) {
-            compositeRelCtrl.call(options.ctrl, options.scope, options.model, options.name, options.displayName,
-                options.parent);
-        };
-        this.extendAggChildCtrl = function (options) {
-            aggregateRelCtrl.call(options.ctrl, options.scope, options.model, options.name,
-                options.displayName, options.parentUrl, options.listUrl);
-        };
-    }]);
-
-    mod.service('modalService', ['$modal', 'CrudTemplatesDir', function ($modal, tplDir) {
-        this.createSelectionModal = function (name, items, currentItems) {
-            return $modal.open({
-                animation: true,
-                templateUrl: tplDir + 'modal.tpl.html',
-                controller: 'modalCtrl',
-                resolve: {
-                    name: function () {
-                        return name;
-                    },
-                    items: function () {
-                        return items;
-                    },
-                    currentItems: function () {
-                        return currentItems;
-                    }
-                }
-            });
-        };
-    }]);
-})
-(window.angular, window.Math);
 angular.module('ngCrud').run(['$templateCache', function($templateCache) {
   'use strict';
 

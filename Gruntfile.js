@@ -15,13 +15,13 @@ module.exports = function (grunt) {
         clean: {
             dist: {
                 files: [{
-                    dot: true,
-                    src: [
-                        '.tmp',
-                        'dist/{,*/}*',
-                        '!dist/.git{,*/}*'
-                    ]
-                }]
+                        dot: true,
+                        src: [
+                            '.tmp',
+                            'dist/{,*/}*',
+                            '!dist/.git{,*/}*'
+                        ]
+                    }]
             },
             server: '.tmp'
         },
@@ -60,9 +60,18 @@ module.exports = function (grunt) {
                     'dist/ngcrud.min.js': '<%= concat.dist.dest %>'
                 }
             }
+        },
+        ngdocs: {
+            options: {
+                dest: 'docs'
+            },
+            all: {
+                src: 'src/**/*.js',
+                title: 'ng-crud'
+            }
         }
     });
 
-    grunt.registerTask('default', ['clean', 'concat:dist', 'ngtemplates:dist', 'uglify:dist']);
+    grunt.registerTask('default', ['clean', 'ngdocs', 'concat:dist', 'ngtemplates:dist', 'uglify:dist']);
 
 };
